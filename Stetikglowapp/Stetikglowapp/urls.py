@@ -26,4 +26,8 @@ urlpatterns = [
     path('nuevo/', InventarioCreate, name='inventario_create'),
     path('editar/<int:pk>/', InventarioUpdate, name='inventario_update'),
     path('eliminar/<int:pk>/', InventarioDelete, name='inventario_delete'),
+    # Grupo 2
+    path('servicios/', views.ServicioList, name='servicios_list'),
+    path('atenciones/registrar/', views.RegistrarAtencion, name='registrar_atencion'),
+    path('ventas/', views.VentaList, name='ventas_list'),
 ]
