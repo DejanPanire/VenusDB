@@ -47,7 +47,7 @@
                         <button class="accordion-button collapsed bg-light d-flex justify-content-between align-items-center" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTodo" aria-expanded="false" aria-controls="collapseTodo">
                             <div>
                                 <span class="fw-bold text-danger me-2">TODO</span>
-                                <span class="badge bg-secondary fs-6">3 sucursales</span>
+                                <span class="badge bg-secondary fs-6">{{ planes_completados.count }} completados</span>
                                 <small class="text-muted ms-3">(Haz clic para ver/ocultar planes completados)</small>
                             </div>
                         </button>
@@ -67,39 +67,23 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        {% for plan in planes_completados %}
                                         <tr>
                                             <td><input type="checkbox" checked disabled></td>
                                             <td>
-                                                <div class="fw-bold">[Urgente] Esmalte Rubber Escritorio 3</div>
-                                                <small class="text-muted">2 insumos</small>
+                                                <div class="fw-bold">{{ plan.titulo }}</div>
+                                                <small class="text-muted">{{ plan.cantidad }} unidades</small>
                                             </td>
-                                            <td>Mall plaza</td>
-                                            <td>Ago 25, 2026</td>
+                                            <td>{{ plan.sucursal.nombre }}</td>
+                                            <td>{{ plan.fecha_solicitud|date:"M d, Y" }}</td>
                                             <td><span class="badge bg-danger rounded-pill px-3">Completado</span></td>
-                                            <td>Ago 25, 2026</td>
+                                            <td>{{ plan.fecha_actualizacion|date:"M d, Y" }}</td>
                                         </tr>
+                                        {% empty %}
                                         <tr>
-                                            <td><input type="checkbox" checked disabled></td>
-                                            <td>
-                                                <div class="fw-bold">[Urgente] Esmaltes Nude Escritorio 5</div>
-                                                <small class="text-muted">1 insumo</small>
-                                            </td>
-                                            <td>Centro- Bañado Esp. Vivar 1901</td>
-                                            <td>Ago 27, 2026</td>
-                                            <td><span class="badge bg-danger rounded-pill px-3">Completado</span></td>
-                                            <td>Ago 27, 2026</td>
+                                            <td colspan="6" class="text-center text-muted py-4">No hay planes completados registrados.</td>
                                         </tr>
-                                        <tr>
-                                            <td><input type="checkbox" checked disabled></td>
-                                            <td>
-                                                <div class="fw-bold">[Mes] Inventario Mensual - Mall</div>
-                                                <small class="text-muted">Todos los insumos</small>
-                                            </td>
-                                            <td>Mall plaza</td>
-                                            <td>Ago 20, 2026</td>
-                                            <td><span class="badge bg-danger rounded-pill px-3">Completado</span></td>
-                                            <td>Ago 31, 2026</td>
-                                        </tr>
+                                        {% endfor %}
                                     </tbody>
                                 </table>
                             </div>
@@ -111,7 +95,7 @@
                 <div class="accordion-item border rounded shadow-sm">
                     <h2 class="accordion-header" id="headingEnProceso">
                         <button class="accordion-button bg-light fw-bold text-danger" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEnProceso" aria-expanded="true" aria-controls="collapseEnProceso">
-                            EN PROCESO <span class="badge bg-light text-muted border fs-6 ms-2">Inventario Insumos</span>
+                            EN PROCESO <span class="badge bg-light text-muted border fs-6 ms-2">{{ planes_en_proceso.count }} solicitudes activas</span>
                         </button>
                     </h2>
                     <div id="collapseEnProceso" class="accordion-collapse collapse show" aria-labelledby="headingEnProceso" data-bs-parent="#accordionPlanInventario">
@@ -125,36 +109,32 @@
                                             <th>Locación</th>
                                             <th>Fecha Solicitud</th>
                                             <th>Estado ingreso</th>
-                                            <th>Acciones</th>
+                                            <th class="text-center">Acciones</th>
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        {% for plan in planes_en_proceso %}
                                         <tr>
                                             <td><input type="checkbox"></td>
                                             <td>
-                                                <div class="fw-bold">[Urgente] Guantes de látex - Bodega Mall</div>
-                                                <small class="text-muted">5 cajas</small>
+                                                <div class="fw-bold">{{ plan.titulo }}</div>
+                                                <small class="text-muted">{{ plan.cantidad }} unidades</small>
                                             </td>
-                                            <td>Mall plaza</td>
-                                            <td>Sep 1, 2026</td>
+                                            <td>{{ plan.sucursal.nombre }}</td>
+                                            <td>{{ plan.fecha_solicitud|date:"M d, Y" }}</td>
                                             <td><span class="badge bg-warning text-dark rounded-pill px-3">Processing</span></td>
-                                            <td>
-                                                <button class="btn btn-sm btn-outline-secondary py-0">✏️ Editar</button>
+                                            <td class="text-center">
+                                                <div class="d-flex gap-1 justify-content-center">
+                                                    <a href="{% url 'plan_inventario_recibir' plan.id %}" class="btn btn-sm btn-success py-0 px-2 text-decoration-none fw-semibold" title="Confirmar llegada de insumos">✔️ Recibir</a>
+                                                    <a href="{% url 'plan_inventario_update' plan.id %}" class="btn btn-sm btn-outline-secondary py-0 px-2 text-decoration-none">✏️ Editar</a>
+                                                </div>
                                             </td>
                                         </tr>
+                                        {% empty %}
                                         <tr>
-                                            <td><input type="checkbox"></td>
-                                            <td>
-                                                <div class="fw-bold">[Urgente] Art. Limpieza - Bodega Vargas</div>
-                                                <small class="text-muted">2 insumos</small>
-                                            </td>
-                                            <td>Centro- Bañado Esp. Vargas 1899</td>
-                                            <td>Sep 1, 2026</td>
-                                            <td><span class="badge bg-warning text-dark rounded-pill px-3">Processing</span></td>
-                                            <td>
-                                                <button class="btn btn-sm btn-outline-secondary py-0">✏️ Editar</button>
-                                            </td>
+                                            <td colspan="6" class="text-center text-muted py-4">No hay insumos pendientes en proceso.</td>
                                         </tr>
+                                        {% endfor %}
                                     </tbody>
                                 </table>
                             </div>

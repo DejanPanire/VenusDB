@@ -74,7 +74,6 @@
                                 <th>ID Insumo</th>
                                 <th>Descripción / Insumo</th>
                                 <th>Categoría</th>
-                                <th>Costo / Referencia</th>
                                 <th>Stock Actual</th>
                                 <th>Stock Mínimo</th>
                                 <th>Última Actualización</th>
@@ -91,7 +90,6 @@
                                     <small class="text-muted">{{ item.producto.descripcion|default:"Insumo operativo para tratamiento"|truncatechars:35 }}</small>
                                 </td>
                                 <td><span class="badge bg-light text-dark border">{{ item.producto.categoria|default:"General" }}</span></td>
-                                <td>${{ item.producto.precio_venta }}</td>
                                 <td>
                                     <span class="fw-bold {% if item.cantidad <= item.producto.stock_minimo %}text-danger{% else %}text-success{% endif %}">
                                         {{ item.cantidad }} uds

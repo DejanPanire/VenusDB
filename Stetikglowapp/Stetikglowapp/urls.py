@@ -17,17 +17,15 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from funciones_app.views import *
-
 urlpatterns = [
+    path('admin/', admin.site.urls),
     path('', InventarioList, name='inventario_list'),
     path('sucursal/<int:sucursal_id>/', InventarioList, name='inventario_list_sucursal'),
     path('plan/', PlanInventarioView, name='plan_inventario'),
-    path('plan/nuevo/', PlanInventarioCreate, name='plan_inventario_create'), # <-- Nueva ruta
+    path('plan/nuevo/', PlanInventarioCreate, name='plan_inventario_create'),
+    path('plan/editar/<int:pk>/', PlanInventarioUpdate, name='plan_inventario_update'),
+    path('plan/recibir/<int:pk>/', PlanInventarioRecibir, name='plan_inventario_recibir'), 
     path('nuevo/', InventarioCreate, name='inventario_create'),
     path('editar/<int:pk>/', InventarioUpdate, name='inventario_update'),
     path('eliminar/<int:pk>/', InventarioDelete, name='inventario_delete'),
-    # Grupo 2
-    path('servicios/', views.ServicioList, name='servicios_list'),
-    path('atenciones/registrar/', views.RegistrarAtencion, name='registrar_atencion'),
-    path('ventas/', views.VentaList, name='ventas_list'),
 ]

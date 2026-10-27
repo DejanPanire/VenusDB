@@ -1,16 +1,46 @@
 from django import forms
-from .models import Inventario, Atencion, Servicio, Venta, Pago
+from .models import *
 
-class InventarioForm(forms.ModelForm):
+class InventarioForm(forms.Form):
+
+    nombre = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre del insumo (ej. Guantes de Nitrilo)'})
+    )
+    categoria = forms.CharField(
+        max_length=50,
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Categoría (ej. Higiene, Capilar, Facial)'})
+    )
+    descripcion = forms.CharField(
+        required=False,
+        widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 2, 'placeholder': 'Descripción u observaciones del insumo'})
+    )
+    stock_minimo = forms.IntegerField(
+        initial=5,
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'min': '0'})
+    )
+    
+    sucursal = forms.ModelChoiceField(
+        queryset=Sucursal.objects.all(),
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    cantidad = forms.IntegerField(
+        initial=1,
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'min': '0'})
+    )
+
+class PlanInventarioForm(forms.ModelForm):
     class Meta:
-        model = Inventario
-        fields = ['sucursal', 'producto', 'cantidad']
+        model = PlanInventario
+        fields = ['titulo', 'cantidad', 'producto', 'sucursal']
         widgets = {
-            'sucursal': forms.Select(attrs={'class': 'form-control'}),
-            'producto': forms.Select(attrs={'class': 'form-control'}),
-            'cantidad': forms.NumberInput(attrs={'class': 'form-control', 'min': '0'}),
+            'titulo': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej. [Urgente] Stock de Esmaltes'}),
+            'cantidad': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Cantidad total'}),
+            'producto': forms.Select(attrs={'class': 'form-select'}),
+            'sucursal': forms.Select(attrs={'class': 'form-select'}),
         }
-
+        
 class ServicioForm(forms.ModelForm):
     """Formulario para la gestión de servicios estéticos."""
     class Meta:
@@ -36,10 +66,8 @@ class AtencionForm(forms.ModelForm):
 
     class Meta:
         model = Atencion
-        fields = ["sucursal", "trabajador", "cliente", "observacion"]
+        fields = ["reserva", "observacion"]
         widgets = {
-            "sucursal": forms.Select(attrs={"class": "form-control"}),
-            "trabajador": forms.Select(attrs={"class": "form-control"}),
-            "cliente": forms.Select(attrs={"class": "form-control"}),
+            "reserva": forms.Select(attrs={"class": "form-control"}),
             "observacion": forms.Textarea(attrs={"class": "form-control", "rows": 3}),
         }

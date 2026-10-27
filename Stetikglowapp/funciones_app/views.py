@@ -1,11 +1,12 @@
 from django.db import transaction
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Sucursal, Inventario, Servicio, Atencion, DetalleAtencion, Venta, Pago
-from .forms import InventarioForm, AtencionForm
+from .models import *
+from .forms import *
+
+
 
 def InventarioList(request, sucursal_id=None):
     sucursales = Sucursal.objects.all()
-    
     if not sucursal_id and sucursales.exists():
         sucursal_actual = sucursales.first()
     elif sucursal_id:
@@ -23,6 +24,8 @@ def InventarioList(request, sucursal_id=None):
     return render(request, 'inventariolista.html', context)
 
 def InventarioCreate(request):
+    
+    
     if request.method == 'POST':
         form = InventarioForm(request.POST)
         if form.is_valid():
@@ -30,9 +33,11 @@ def InventarioCreate(request):
             return redirect('inventario_list_sucursal', sucursal_id=inv.sucursal.id)
     else:
         form = InventarioForm()
-    return render(request, 'inventarioFrom.html', {'form': form, 'titulo': 'Agregar Stock'})
+    return render(request, 'inventarioFrom.html', {'form': form, 'titulo': 'Agregar Insumo'})
 
 def InventarioUpdate(request, pk):
+    
+    
     inventario = get_object_or_404(Inventario, pk=pk)
     if request.method == 'POST':
         form = InventarioForm(request.POST, instance=inventario)
@@ -41,9 +46,11 @@ def InventarioUpdate(request, pk):
             return redirect('inventario_list_sucursal', sucursal_id=inv.sucursal.id)
     else:
         form = InventarioForm(instance=inventario)
-    return render(request, 'inventarioFrom.html', {'form': form, 'titulo': 'Editar Stock'})
+    return render(request, 'inventarioFrom.html', {'form': form, 'titulo': 'Editar Insumo'})
 
 def InventarioDelete(request, pk):
+    
+    
     inventario = get_object_or_404(Inventario, pk=pk)
     sucursal_id = inventario.sucursal.id
     if request.method == 'POST':
@@ -53,17 +60,62 @@ def InventarioDelete(request, pk):
 
 def PlanInventarioView(request):
     sucursales = Sucursal.objects.all()
+    planes_en_proceso = PlanInventario.objects.filter(estado='Processing')
+    planes_completados = PlanInventario.objects.filter(estado='Completado')
+    
     context = {
         'sucursales': sucursales,
+        'planes_en_proceso': planes_en_proceso,
+        'planes_completados': planes_completados,
     }
     return render(request, 'planinventario.html', context)
 
 def PlanInventarioCreate(request):
+    if request.method == 'POST':
+        form = PlanInventarioForm(request.POST)
+        if form.is_valid():
+            plan = form.save(commit=False)
+            plan.estado = 'Processing'  
+            plan.save()
+            return redirect('plan_inventario') 
+        else:
+            print("Errores en el formulario:", form.errors)
+    else:
+        form = PlanInventarioForm()
+    
+    return render(request, 'planinventarioform.html', {'form': form})
+
+def PlanInventarioUpdate(request, pk):
+    
+    
     sucursales = Sucursal.objects.all()
     if request.method == 'POST':
-        return redirect('plan_inventario')
-    return render(request, 'planinventarioform.html', {'sucursales': sucursales, 'titulo': 'Crear Nuevo Plan de Inventario'})
 
+        return redirect('plan_inventario')
+    
+    context = {
+        'sucursales': sucursales,
+        'plan_id': pk,
+        'titulo': f'Editar Plan de Inventario #{pk}'
+    }
+    return render(request, 'planinventarioform.html', context)
+
+def PlanInventarioRecibir(request, pk):
+    with transaction.atomic():
+        plan = get_object_or_404(PlanInventario, pk=pk)
+        plan.estado = 'Completado'
+        plan.save()
+        
+        inventario, creado = Inventario.objects.get_or_create(
+            sucursal=plan.sucursal,
+            producto=plan.producto,
+            defaults={'cantidad': plan.cantidad}
+        )
+        if not creado:
+            inventario.cantidad += plan.cantidad
+            inventario.save()
+            
+    return redirect('plan_inventario')
 
 # --- Módulo de Servicios y Ventas ---
 
@@ -83,8 +135,12 @@ def RegistrarAtencion(request):
             with transaction.atomic():
                 # 1. Guardar la cabecera de la atención
                 atencion = form.save(commit=False)
-                atencion.estado = 'Completada'
                 atencion.save()
+
+                # Actualizar el estado de la reserva vinculada a 'Completada'
+                if atencion.reserva:
+                    atencion.reserva.estado = 'Completada'
+                    atencion.reserva.save()
 
                 total_venta = 0
                 # 2. Registrar cada servicio seleccionado aplicando el precio base
@@ -98,11 +154,16 @@ def RegistrarAtencion(request):
                     )
                     total_venta += precio
 
-                # 3. Generar la Venta y el Pago asociado (Garantiza consistencia ACID en MySQL)
+                # 3. Extraer cliente, empleado y sucursal desde la reserva de la atención
+                cliente = atencion.reserva.cliente if atencion.reserva else None
+                empleado = atencion.reserva.trabajador if atencion.reserva else None
+                sucursal = atencion.reserva.sucursal if atencion.reserva else None
+
+                # 4. Generar la Venta y el Pago asociado manteniendo la consistencia ACID
                 venta = Venta.objects.create(
-                    cliente=atencion.cliente,
-                    empleado=atencion.trabajador,
-                    sucursal=atencion.sucursal,
+                    cliente=cliente,
+                    empleado=empleado,
+                    sucursal=sucursal,
                     atencion=atencion,
                     total=total_venta,
                     estado='Pagada',

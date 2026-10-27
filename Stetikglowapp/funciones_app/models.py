@@ -117,9 +117,7 @@ class ProductoInsumo(models.Model):
     nombre = models.CharField(max_length=100)
     categoria = models.CharField(max_length=50, blank=True, null=True)
     descripcion = models.TextField(blank=True, null=True)
-    precio_venta = models.DecimalField(
-        max_digits=10, decimal_places=2, default=0.00
-    )
+
     stock_minimo = models.PositiveIntegerField(default=5)
     es_insumo = models.BooleanField(default=False)
 
@@ -413,3 +411,35 @@ class Pago(models.Model):
 
     class Meta:
         db_table = "funciones_app_pago"
+
+class PlanInventario(models.Model):
+    ESTADOS_PLAN = [
+        ("Processing", "Processing"),
+        ("Completado", "Completado"),
+    ]
+    
+    titulo = models.CharField(max_length=150)
+    sucursal = models.ForeignKey(
+        Sucursal,
+        on_delete=models.CASCADE,
+        db_column="sucursal_id",
+        related_name="planes_inventario"
+    )
+    producto = models.ForeignKey(
+        ProductoInsumo,
+        on_delete=models.CASCADE,
+        db_column="producto_id",
+        related_name="planes_inventario"
+    )
+    cantidad = models.PositiveIntegerField(default=1)
+    estado = models.CharField(max_length=30, choices=ESTADOS_PLAN, default="Processing")
+    fecha_solicitud = models.DateField(auto_now_add=True)
+    fecha_actualizacion = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.titulo} - {self.sucursal.nombre} ({self.estado})"
+
+    class Meta:
+        db_table = "funciones_app_planinventario"
+        verbose_name = "Plan de Inventario"
+        verbose_name_plural = "Planes de Inventario"
