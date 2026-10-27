@@ -1,0 +1,1632 @@
+/* Venus - Centro de Estética
+   Hoja de estilos del sistema. */
+
+
+/* ========== Colores y medidas ========== */
+
+:root {
+  --rosa: #F4C2D7;
+  --rosa-medio: #E8A1BD;
+  --rosa-oscuro: #D982A5;
+  --rosa-borde: #F1D4E0;
+  --rosa-fondo: #FFF5F8;
+  --texto: #1F1A1D;
+  --texto-suave: #6B5F65;
+  --blanco: #FFFFFF;
+
+  --verde: #16A34A;
+  --verde-oscuro: #15803D;
+  --verde-claro: #DCFCE7;
+  --verde-fondo: #F0FDF4;
+  --verde-borde: #86EFAC;
+  --verde-texto: #166534;
+
+  --amarillo-claro: #FEF3C7;
+  --amarillo-borde: #FCD34D;
+  --amarillo-texto: #92400E;
+
+  --rojo: #EF4444;
+  --rojo-oscuro: #DC2626;
+  --rojo-claro: #FEE2E2;
+  --rojo-fondo: #FEF2F2;
+  --rojo-borde: #FECACA;
+  --rojo-texto: #B91C1C;
+
+  --radio: 8px;
+  --radio-grande: 14px;
+  --sombra: 0 1px 3px rgba(74, 53, 64, 0.08);
+  --sombra-grande: 0 10px 30px rgba(74, 53, 64, 0.12);
+}
+
+
+/* ========== Base ========== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--rosa-fondo);
+  color: var(--texto);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+h1, h2, h3, p, ul, dl, dd {
+  margin: 0;
+}
+
+h1 { font-size: 24px; }
+h2 { font-size: 20px; }
+h3 { font-size: 18px; font-weight: 600; }
+
+ul {
+  padding: 0;
+  list-style: none;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+button,
+input,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+code {
+  font-family: ui-monospace, Consolas, monospace;
+}
+
+.oculto {
+  display: none !important;
+}
+
+.texto-suave {
+  color: var(--texto-suave);
+}
+
+.texto-chico {
+  font-size: 12px;
+}
+
+.titulo-serif {
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+.icono {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.icono-chico {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+}
+
+
+/* ========== Estructura de la aplicación ========== */
+
+.app {
+  display: flex;
+  min-height: 100vh;
+}
+
+.menu-lateral {
+  width: 256px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  background: var(--rosa);
+}
+
+.menu-logo {
+  margin-bottom: 32px;
+}
+
+.menu-logo .caja-logo {
+  padding: 8px 12px;
+  background: var(--blanco);
+  border-radius: 16px;
+  box-shadow: var(--sombra);
+}
+
+.menu-logo img {
+  height: 56px;
+  margin: 0 auto;
+}
+
+.menu-logo p {
+  margin-top: 8px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--texto-suave);
+}
+
+.menu-usuario {
+  margin-bottom: 24px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 12px;
+}
+
+.menu-usuario .nombre {
+  font-weight: 500;
+}
+
+.menu-usuario .rol {
+  margin-bottom: 8px;
+  font-size: 12px;
+  color: var(--texto-suave);
+}
+
+.menu-usuario .dato {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  font-size: 12px;
+}
+
+.menu-usuario .dato + .dato {
+  margin-top: 4px;
+}
+
+.menu-usuario .dato .icono-chico {
+  margin-top: 2px;
+}
+
+.menu-usuario label {
+  font-size: 12px;
+  color: var(--texto-suave);
+}
+
+.menu-usuario select {
+  width: 100%;
+  margin-top: 4px;
+  padding: 6px 8px;
+  font-size: 12px;
+  background: var(--blanco);
+  border: 1px solid var(--rosa-borde);
+  border-radius: 6px;
+}
+
+.menu-usuario .perfil-corto {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.menu-nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.menu-enlace {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-weight: 500;
+  opacity: 0.75;
+  transition: background 0.15s;
+}
+
+.menu-enlace:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.menu-enlace.activo {
+  background: var(--blanco);
+  color: var(--rosa-oscuro);
+  box-shadow: var(--sombra);
+  opacity: 1;
+}
+
+.contenido {
+  flex: 1;
+  min-width: 0;
+  padding: 32px;
+}
+
+.pagina-publica {
+  min-height: 100vh;
+  padding: 32px 24px;
+}
+
+
+/* ========== Mensajes ========== */
+
+.mensajes {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.alerta {
+  padding: 12px 16px;
+  background: var(--blanco);
+  border: 1px solid var(--rosa-borde);
+  border-radius: 12px;
+}
+
+.alerta-error {
+  background: var(--rojo-fondo);
+  border-color: var(--rojo-borde);
+  color: var(--rojo-oscuro);
+}
+
+
+/* ========== Tarjetas y encabezados ========== */
+
+.tarjeta {
+  padding: 24px;
+  background: var(--blanco);
+  border: 1px solid var(--rosa-borde);
+  border-radius: var(--radio-grande);
+  box-shadow: var(--sombra);
+}
+
+.tarjeta > h3 {
+  margin-bottom: 16px;
+}
+
+.tarjeta-vacia {
+  padding: 32px;
+  text-align: center;
+  color: var(--texto-suave);
+}
+
+.tarjeta-vacia .icono {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 16px;
+  color: var(--rosa-medio);
+}
+
+.encabezado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.encabezado p {
+  color: var(--texto-suave);
+}
+
+.vacio {
+  color: var(--texto-suave);
+}
+
+
+/* ========== Botones ========== */
+
+.boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: background 0.15s;
+}
+
+.boton-primario {
+  background: var(--rosa-medio);
+  color: var(--blanco);
+}
+
+.boton-primario:hover {
+  background: var(--rosa-oscuro);
+}
+
+.boton-borde {
+  background: var(--blanco);
+  border-color: var(--rosa-borde);
+}
+
+.boton-borde:hover {
+  background: var(--rosa-fondo);
+}
+
+.boton-verde {
+  background: var(--verde);
+  color: var(--blanco);
+}
+
+.boton-verde:hover {
+  background: var(--verde-oscuro);
+}
+
+.boton-rojo {
+  background: var(--rojo);
+  color: var(--blanco);
+}
+
+.boton-rojo:hover {
+  background: var(--rojo-oscuro);
+}
+
+.boton-cancelar {
+  background: var(--blanco);
+  border-color: var(--rojo-borde);
+  color: var(--rojo-oscuro);
+}
+
+.boton-cancelar:hover {
+  background: var(--rojo-fondo);
+}
+
+.boton-ancho {
+  width: 100%;
+}
+
+.boton-grande {
+  padding: 12px 16px;
+}
+
+.boton-chico {
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
+.boton-cuadrado {
+  padding: 8px;
+}
+
+
+/* ========== Formularios ========== */
+
+.campo label,
+.campo .etiqueta {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.entrada {
+  width: 100%;
+  padding: 8px 12px;
+  background: var(--blanco);
+  border: 1px solid var(--rosa-borde);
+  border-radius: 6px;
+}
+
+.entrada::placeholder {
+  color: #9CA3AF;
+}
+
+.entrada:focus {
+  outline: none;
+  border-color: var(--rosa-medio);
+  box-shadow: 0 0 0 3px rgba(232, 161, 189, 0.35);
+}
+
+.error-campo {
+  margin-top: 4px;
+  color: var(--rojo);
+}
+
+.error-campo:empty {
+  display: none;
+}
+
+.fila-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.con-icono {
+  position: relative;
+}
+
+.con-icono .icono {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+  opacity: 0.4;
+}
+
+.con-icono .entrada {
+  padding-left: 38px;
+}
+
+
+/* ========== Estados de reserva ========== */
+
+.estado-pendiente {
+  background: var(--amarillo-claro);
+  border-color: var(--amarillo-borde);
+  color: var(--amarillo-texto);
+}
+
+.estado-confirmada {
+  background: var(--verde-claro);
+  border-color: var(--verde-borde);
+  color: var(--verde-texto);
+}
+
+.estado-completada {
+  background: var(--verde);
+  border-color: var(--verde-oscuro);
+  color: var(--blanco);
+}
+
+.estado-cancelada {
+  background: var(--rojo-claro);
+  border-color: #FCA5A5;
+  color: var(--rojo-texto);
+}
+
+.etiqueta-estado {
+  display: inline-block;
+  padding: 3px 12px;
+  border: 1px solid;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  color: var(--blanco);
+  font-weight: 600;
+}
+
+.avatar-chico {
+  width: 36px;
+  height: 36px;
+}
+
+.avatar-grande {
+  width: 64px;
+  height: 64px;
+  font-size: 24px;
+}
+
+
+/* ========== Calendario ========== */
+
+.pestanas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.pestana {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--blanco);
+  border: 1px solid var(--rosa-borde);
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+.pestana:hover {
+  background: var(--rosa-fondo);
+}
+
+.pestana.activa {
+  background: var(--rosa-medio);
+  border-color: var(--rosa-medio);
+  color: var(--blanco);
+  box-shadow: var(--sombra);
+}
+
+.barra-filtros {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding: 16px;
+  background: var(--blanco);
+  border: 1px solid var(--rosa-borde);
+  border-radius: 16px;
+  box-shadow: var(--sombra);
+}
+
+.selector-fecha {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.selector-fecha .fecha-texto {
+  min-width: 176px;
+  text-align: center;
+  font-weight: 500;
+}
+
+.selector-fecha input {
+  padding: 6px 8px;
+  border: 1px solid var(--rosa-borde);
+  border-radius: 6px;
+}
+
+.barra-filtros select {
+  width: 192px;
+}
+
+.barra-filtros .buscador {
+  flex: 1;
+  min-width: 192px;
+}
+
+.calendario {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.calendario-principal {
+  min-width: 0;
+}
+
+.calendario-lateral {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+
+/* Agenda del día: una columna por trabajadora, 60px por cada media hora */
+
+.agenda {
+  overflow-x: auto;
+}
+
+.agenda-interior {
+  min-width: 560px;
+}
+
+.agenda-cabecera {
+  display: flex;
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--rosa-borde);
+}
+
+.agenda-cabecera .espacio-horas {
+  width: 80px;
+  flex-shrink: 0;
+}
+
+.agenda-persona {
+  flex: 1;
+  padding: 8px;
+  text-align: center;
+}
+
+.agenda-persona .avatar {
+  margin: 0 auto 4px;
+}
+
+.agenda-persona .nombre {
+  font-weight: 500;
+}
+
+.agenda-persona .especialidad {
+  font-size: 12px;
+  color: var(--texto-suave);
+}
+
+.agenda-cuerpo {
+  position: relative;
+}
+
+.agenda-horas {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 80px;
+}
+
+.agenda-horas div {
+  height: 60px;
+  padding-right: 8px;
+  text-align: right;
+  font-size: 12px;
+  color: var(--texto-suave);
+}
+
+.agenda-columnas {
+  display: flex;
+  margin-left: 80px;
+}
+
+.agenda-columna {
+  position: relative;
+  flex: 1;
+  border-left: 1px solid var(--rosa-borde);
+}
+
+.agenda-franja {
+  display: block;
+  height: 60px;
+  border-bottom: 1px solid var(--rosa-borde);
+}
+
+.agenda-franja:nth-child(even) {
+  border-bottom-color: var(--rosa-fondo);
+}
+
+.agenda-franja:hover {
+  background: var(--rosa-fondo);
+}
+
+.agenda-bloqueo {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--rosa-fondo);
+  border: 1px dashed var(--rosa-medio);
+  border-radius: var(--radio);
+  font-size: 12px;
+  color: var(--texto-suave);
+  pointer-events: none;
+}
+
+.agenda-reserva {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  z-index: 20;
+  overflow: hidden;
+  padding: 2px 8px;
+  border: 1px solid;
+  border-radius: 6px;
+  box-shadow: var(--sombra);
+  font-size: 11px;
+  line-height: 16px;
+}
+
+.agenda-reserva.grande {
+  padding: 6px 8px;
+}
+
+.agenda-reserva .hora {
+  font-weight: 600;
+}
+
+.agenda-reserva .cliente {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.agenda-reserva .una-linea {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.agenda-reserva .solo-al-pasar {
+  display: none;
+}
+
+/* al pasar el mouse la tarjeta crece y muestra todo */
+.agenda-reserva:hover {
+  z-index: 40;
+  height: auto !important;
+  box-shadow: var(--sombra-grande);
+}
+
+.agenda-reserva:hover .una-linea {
+  white-space: normal;
+}
+
+.agenda-reserva:hover .solo-al-pasar {
+  display: block;
+}
+
+.aviso-sin-asignar {
+  margin-top: 16px;
+  padding: 12px;
+  background: #FFFBEB;
+  border: 1px solid var(--amarillo-borde);
+  border-radius: 12px;
+}
+
+.aviso-sin-asignar a {
+  display: block;
+}
+
+.aviso-sin-asignar a:hover {
+  text-decoration: underline;
+}
+
+
+/* Listado, resumen y sala de espera */
+
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabla th {
+  padding: 8px 16px 8px 0;
+  text-align: left;
+  font-weight: 600;
+  color: var(--texto-suave);
+  border-bottom: 1px solid var(--rosa-borde);
+}
+
+.tabla td {
+  padding: 8px 16px 8px 0;
+  border-bottom: 1px solid var(--rosa-fondo);
+}
+
+.tabla td:first-child {
+  white-space: nowrap;
+}
+
+.tabla tbody tr:hover {
+  background: var(--rosa-fondo);
+}
+
+.tabla a:hover {
+  text-decoration: underline;
+}
+
+.resumen-estados {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.resumen-estados div {
+  padding: 16px;
+  text-align: center;
+  border: 1px solid;
+  border-radius: 12px;
+}
+
+.resumen-estados .numero {
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.sala-espera {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sala-espera li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
+  background: var(--rosa-fondo);
+  border: 1px solid var(--rosa-borde);
+  border-radius: 12px;
+}
+
+.sala-espera .nombre {
+  font-weight: 500;
+}
+
+.leyenda {
+  margin-top: 16px;
+  padding: 16px;
+}
+
+.leyenda > p {
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+
+.leyenda-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.leyenda-items span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.punto {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.punto-pendiente  { background: #FBBF24; }
+.punto-confirmada { background: var(--verde-borde); }
+.punto-completada { background: var(--verde); }
+.punto-cancelada  { background: #F87171; }
+.punto-bloqueo    { background: var(--rosa-fondo); border: 1px dashed var(--rosa-medio); }
+
+
+/* Detalle de la reserva y disponibilidad */
+
+.detalle {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.detalle dt {
+  color: var(--texto-suave);
+}
+
+.detalle dd {
+  font-weight: 500;
+}
+
+.detalle .acciones {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 8px;
+}
+
+.dialogo {
+  width: 100%;
+  max-width: 448px;
+  padding: 32px;
+  border: none;
+  border-radius: 16px;
+  box-shadow: var(--sombra-grande);
+}
+
+.dialogo::backdrop {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.dialogo h3 {
+  margin-bottom: 16px;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.dialogo p {
+  margin-bottom: 24px;
+  color: var(--texto-suave);
+}
+
+.dialogo form {
+  display: flex;
+  gap: 12px;
+}
+
+.dialogo .boton {
+  flex: 1;
+}
+
+.ubicacion {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  color: var(--texto-suave);
+}
+
+.subtitulo {
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.lista-horas {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.hora-ocupada,
+.hora-libre {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border: 1px solid;
+  border-radius: var(--radio);
+}
+
+.hora-ocupada {
+  background: var(--rojo-fondo);
+  border-color: var(--rojo-borde);
+  color: var(--rojo-texto);
+}
+
+.hora-ocupada .icono {
+  color: var(--rojo);
+}
+
+.hora-libre {
+  background: var(--verde-fondo);
+  border-style: dashed;
+  border-color: var(--verde-borde);
+  color: var(--verde-texto);
+}
+
+.hora-libre:hover {
+  background: var(--verde-claro);
+}
+
+.hora-libre .icono {
+  color: var(--verde);
+}
+
+
+/* ========== Reservar ========== */
+
+.reservar {
+  max-width: 768px;
+  margin: 0 auto;
+}
+
+.reservar-titulo {
+  margin-bottom: 32px;
+  text-align: center;
+}
+
+.reservar-titulo img {
+  height: 128px;
+  margin: 0 auto 16px;
+}
+
+.reservar-titulo h1 {
+  margin-bottom: 8px;
+  font-size: 30px;
+}
+
+.reservar-titulo p {
+  color: var(--texto-suave);
+}
+
+.pasos {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.paso {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--rosa-borde);
+  color: var(--texto-suave);
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.paso.activo {
+  background: var(--rosa-medio);
+  color: var(--blanco);
+}
+
+.linea {
+  width: 64px;
+  height: 2px;
+  background: var(--rosa-borde);
+}
+
+.linea.activa {
+  background: var(--rosa-medio);
+}
+
+.formulario-reserva {
+  padding: 32px;
+  box-shadow: var(--sombra-grande);
+}
+
+.formulario-reserva > .alerta {
+  margin-bottom: 24px;
+}
+
+.formulario-reserva section {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.horarios {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.horarios:empty {
+  display: none;
+}
+
+.horario {
+  padding: 12px;
+  background: var(--verde-fondo);
+  border: 1px solid var(--verde-borde);
+  border-radius: 12px;
+  color: var(--verde-texto);
+  font-weight: 500;
+}
+
+.horario:hover {
+  background: var(--verde-claro);
+}
+
+.horario.elegido {
+  background: var(--verde);
+  border-color: var(--verde);
+  color: var(--blanco);
+}
+
+.nota {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--texto-suave);
+}
+
+.caja-resumen {
+  padding: 16px;
+  background: var(--rosa-fondo);
+  border: 1px solid var(--rosa-borde);
+  border-radius: 12px;
+}
+
+.caja-resumen h3 {
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.caja-resumen p + p {
+  margin-top: 6px;
+}
+
+.caja-resumen .dato {
+  color: var(--texto-suave);
+}
+
+.caja-resumen .valor {
+  font-weight: 500;
+}
+
+.botones-paso {
+  display: flex;
+  gap: 12px;
+}
+
+.botones-paso .boton {
+  flex: 1;
+}
+
+.reserva-lista {
+  padding: 48px;
+  text-align: center;
+  box-shadow: var(--sombra-grande);
+}
+
+.reserva-lista .check {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 24px;
+  background: var(--verde-claro);
+  border-radius: 50%;
+}
+
+.reserva-lista .check .icono {
+  width: 40px;
+  height: 40px;
+  color: var(--verde);
+}
+
+.reserva-lista h2 {
+  margin-bottom: 16px;
+  font-size: 24px;
+}
+
+.reserva-lista > p {
+  margin-bottom: 32px;
+  color: var(--texto-suave);
+}
+
+.reserva-lista .caja-resumen {
+  margin-bottom: 32px;
+  padding: 24px;
+  text-align: left;
+}
+
+.aviso-qr {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 32px;
+}
+
+.aviso-qr .cuadro {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+  background: var(--rosa-fondo);
+  border: 1px dashed var(--rosa-medio);
+  border-radius: 12px;
+}
+
+.aviso-qr .cuadro .icono {
+  width: 32px;
+  height: 32px;
+  color: var(--rosa-oscuro);
+}
+
+.aviso-qr h3 {
+  margin-bottom: 4px;
+  font-size: 14px;
+}
+
+.aviso-qr > div:last-child {
+  min-width: 0;
+}
+
+.aviso-qr p {
+  color: var(--texto-suave);
+}
+
+.aviso-qr code {
+  word-break: break-all;
+}
+
+
+/* ========== Login ========== */
+
+.login {
+  display: flex;
+  min-height: 100vh;
+}
+
+.login-lado {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 50%;
+  padding: 48px;
+  background: var(--rosa);
+}
+
+.login-lado > * {
+  position: relative;
+  z-index: 1;
+}
+
+.circulo {
+  position: absolute;
+  z-index: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.circulo-1 { top: 40px; right: 40px; width: 160px; height: 160px; }
+.circulo-2 { bottom: 80px; left: 40px; width: 240px; height: 240px; background: rgba(255, 255, 255, 0.1); }
+.circulo-3 { top: 33%; right: 80px; width: 96px; height: 96px; }
+
+.login-logo {
+  display: inline-block;
+  padding: 16px 24px;
+  background: var(--blanco);
+  border-radius: 24px;
+  box-shadow: var(--sombra-grande);
+}
+
+.login-logo img {
+  height: 80px;
+}
+
+.login-ciudad {
+  margin: 12px 0 0 8px;
+  color: var(--texto-suave);
+}
+
+.login-lado h2 {
+  margin-bottom: 16px;
+  font-size: 36px;
+  line-height: 1.15;
+}
+
+.login-lado .bajada {
+  max-width: 448px;
+  margin-bottom: 32px;
+  font-size: 18px;
+}
+
+.login-modulos {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  max-width: 448px;
+}
+
+.login-modulos div {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+.login-modulos .icono {
+  width: 20px;
+  height: 20px;
+  color: var(--rosa-oscuro);
+}
+
+.login-pie {
+  color: var(--texto-suave);
+}
+
+.login-formulario {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50%;
+  padding: 32px;
+}
+
+.login-caja {
+  width: 100%;
+  max-width: 448px;
+  padding: 32px;
+  box-shadow: var(--sombra-grande);
+}
+
+.login-caja .logo-movil {
+  display: none;
+  height: 64px;
+  margin: 0 auto 32px;
+}
+
+.login-caja h2 {
+  margin-bottom: 8px;
+  font-size: 24px;
+}
+
+.login-caja .bajada {
+  margin-bottom: 32px;
+  color: var(--texto-suave);
+}
+
+.login-caja form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.campo-clave {
+  position: relative;
+}
+
+.campo-clave .entrada {
+  padding-right: 40px;
+}
+
+.campo-clave button {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  padding: 0;
+  background: none;
+  border: none;
+  opacity: 0.5;
+}
+
+.campo-clave button:hover {
+  color: var(--rosa-oscuro);
+  opacity: 1;
+}
+
+.cuentas-demo {
+  margin-top: 24px;
+  padding: 16px;
+  background: var(--rosa-fondo);
+  border: 1px solid var(--rosa-borde);
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+.cuentas-demo > p {
+  margin-bottom: 8px;
+  text-align: center;
+  color: var(--texto-suave);
+}
+
+.cuentas-demo li {
+  font-family: ui-monospace, Consolas, monospace;
+}
+
+.cuentas-demo li + li {
+  margin-top: 4px;
+}
+
+.cuentas-demo li span {
+  font-family: system-ui, sans-serif;
+  color: var(--texto-suave);
+}
+
+
+/* ========== Panel de empleada ========== */
+
+.selector-dia {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+  padding: 16px;
+}
+
+.contadores {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.contadores .tarjeta {
+  padding: 16px;
+}
+
+.contadores .numero {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.cita {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.cita .horas {
+  width: 96px;
+  flex-shrink: 0;
+  padding-top: 8px;
+  font-weight: 600;
+}
+
+.cita .horas span {
+  font-weight: 400;
+  color: var(--texto-suave);
+}
+
+.cita .caja {
+  flex: 1;
+  padding: 12px;
+  border: 1px solid;
+  border-radius: var(--radio);
+}
+
+.cita .caja .arriba {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.cita .caja .arriba span {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.cita-bloqueo .horas {
+  font-weight: 400;
+  color: var(--texto-suave);
+}
+
+.cita-bloqueo .caja {
+  background: var(--rosa-fondo);
+  border: 1px dashed var(--rosa-medio);
+  font-size: 12px;
+  color: var(--texto-suave);
+}
+
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.lista-reservas {
+  padding: 0;
+}
+
+.lista-reservas .fila {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  border-bottom: 1px solid var(--rosa-borde);
+}
+
+.lista-reservas .fila:last-child {
+  border-bottom: none;
+}
+
+.lista-reservas .cuando {
+  width: 144px;
+  flex-shrink: 0;
+}
+
+.lista-reservas .cuando p:first-child,
+.lista-reservas .quien p:first-child {
+  font-weight: 600;
+}
+
+.lista-reservas .quien {
+  flex: 1;
+  min-width: 192px;
+}
+
+.lista-reservas .etiqueta-estado {
+  border-radius: 6px;
+}
+
+.lista-reservas form {
+  display: flex;
+  gap: 8px;
+}
+
+.perfil {
+  max-width: 576px;
+}
+
+.perfil-cabecera {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.perfil-cabecera .nombre {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.perfil-datos {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  row-gap: 12px;
+}
+
+.perfil-datos dt {
+  color: var(--texto-suave);
+}
+
+.perfil-datos dd {
+  font-weight: 500;
+}
+
+.perfil .nota {
+  margin-top: 24px;
+}
+
+
+/* ========== Pantallas más chicas ========== */
+
+@media (max-width: 1279px) {
+  .calendario {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 1023px) {
+  .login-lado {
+    display: none;
+  }
+
+  .login-formulario {
+    width: 100%;
+  }
+
+  .login-caja .logo-movil {
+    display: block;
+  }
+}
+
+@media (max-width: 767px) {
+  .app {
+    flex-direction: column;
+  }
+
+  .menu-lateral {
+    width: 100%;
+  }
+
+  .menu-logo {
+    margin-bottom: 16px;
+  }
+
+  .contenido {
+    padding: 20px 16px;
+  }
+
+  .pagina-publica {
+    padding: 24px 16px;
+  }
+
+  .fila-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .horarios,
+  .resumen-estados,
+  .contadores {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .formulario-reserva,
+  .reserva-lista {
+    padding: 24px;
+  }
+}
+
+@media print {
+  .menu-lateral,
+  .mensajes {
+    display: none;
+  }
+}

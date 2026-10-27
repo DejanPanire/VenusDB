@@ -19,6 +19,7 @@ from django.urls import path, include
 from funciones_app.views import *
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('agenda/', include('agenda.urls')),
     path('', InventarioList, name='inventario_list'),
     path('sucursal/<int:sucursal_id>/', InventarioList, name='inventario_list_sucursal'),
     path('plan/', PlanInventarioView, name='plan_inventario'),

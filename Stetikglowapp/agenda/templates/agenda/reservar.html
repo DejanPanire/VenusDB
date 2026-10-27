@@ -1,0 +1,163 @@
+{% extends layout %}{% load venus %}{% load static %}
+{% block titulo %}Reserva tu hora · Venus{% endblock %}
+{% block contenido %}
+<div class="reservar">
+  <div class="reservar-titulo">
+    <img src="{% static 'agenda/img/venus-logo-vertical.svg' %}" alt="Venus · Centro de Estética">
+    <h1 class="titulo-serif">Reserva tu hora</h1>
+    <p>Completa tus datos y elige el servicio que deseas</p>
+  </div>
+
+  {% if exito %}
+  <div class="tarjeta reserva-lista">
+    <div class="check"><i data-lucide="check-circle-2" class="icono"></i></div>
+    <h2>¡Tu reserva ha sido registrada!</h2>
+    <p>Quedó en estado <strong>pendiente</strong> hasta que el centro la confirme.</p>
+    <div class="caja-resumen">
+      <p><span class="dato">Cliente:</span> <span class="valor">{{ exito.cliente|nombre_completo }}</span></p>
+      <p><span class="dato">Local:</span> <span class="valor">{{ exito.sucursal.nombre }}</span></p>
+      <p><span class="dato">Servicio:</span> <span class="valor">{{ exito.servicio_txt }}</span></p>
+      <p><span class="dato">Fecha:</span> <span class="valor">{{ exito.fecha|date:"l j \d\e F \d\e Y" }}</span></p>
+      <p><span class="dato">Hora:</span> <span class="valor">{{ exito.hora_inicio|time:"H:i" }} - {{ exito.hora_fin|time:"H:i" }}</span></p>
+      <p><span class="dato">Trabajadora:</span> <span class="valor">{{ exito.trabajador|nombre_completo }}</span></p>
+      <p><span class="dato">Precio:</span> <span class="valor">{{ exito.precio_txt }}</span></p>
+    </div>
+    {% if user.is_authenticated %}
+    <a href="{% url 'calendario' %}?fecha={{ exito.fecha|date:'Y-m-d' }}" class="boton boton-primario">Volver al calendario</a>
+    {% else %}
+    <a href="{% url 'reservar' %}" class="boton boton-primario">Hacer otra reserva</a>
+    {% endif %}
+  </div>
+  {% else %}
+
+  <div class="pasos" id="indicador">
+    <div data-paso="1" class="paso">1</div>
+    <div data-linea="1" class="linea"></div>
+    <div data-paso="2" class="paso">2</div>
+    <div data-linea="2" class="linea"></div>
+    <div data-paso="3" class="paso">3</div>
+  </div>
+
+  <form method="post" id="form-reserva" data-paso="{{ paso }}" data-url-trabajadoras="{% url 'api_trabajadoras' %}" data-url-disponibilidad="{% url 'api_disponibilidad' %}" class="tarjeta formulario-reserva" novalidate>
+    {% csrf_token %}
+    {% if errores.hora and not errores.rut %}<div class="alerta alerta-error">{{ errores.hora }}</div>{% endif %}
+
+    <section data-seccion="1" class="oculto">
+      <h2>Datos del cliente</h2>
+      <div class="campo">
+        <label for="rut">RUT</label>
+        <input id="rut" name="rut" value="{{ d.rut }}" placeholder="12.345.678-5" class="entrada">
+        <p data-error="rut" class="error-campo">{{ errores.rut }}</p>
+      </div>
+      <div class="fila-2">
+        <div class="campo">
+          <label for="nombre">Nombre</label>
+          <input id="nombre" name="nombre" value="{{ d.nombre }}" placeholder="María" class="entrada">
+          <p data-error="nombre" class="error-campo">{{ errores.nombre }}</p>
+        </div>
+        <div class="campo">
+          <label for="apellido">Apellido</label>
+          <input id="apellido" name="apellido" value="{{ d.apellido }}" placeholder="Pérez" class="entrada">
+          <p data-error="apellido" class="error-campo">{{ errores.apellido }}</p>
+        </div>
+      </div>
+      <div class="fila-2">
+        <div class="campo">
+          <label for="telefono">Teléfono</label>
+          <input id="telefono" name="telefono" value="{{ d.telefono }}" placeholder="+56 9 1234 5678" class="entrada">
+          <p data-error="telefono" class="error-campo">{{ errores.telefono }}</p>
+        </div>
+        <div class="campo">
+          <label for="email">Correo electrónico</label>
+          <input id="email" name="email" type="email" value="{{ d.email }}" placeholder="maria@email.com" class="entrada">
+          <p data-error="email" class="error-campo">{{ errores.email }}</p>
+        </div>
+      </div>
+      <button type="button" data-ir="2" class="boton boton-primario boton-ancho boton-grande">Continuar <i data-lucide="chevron-right" class="icono"></i></button>
+    </section>
+
+    <section data-seccion="2" class="oculto">
+      <h2>Selección de reserva</h2>
+      <div class="campo">
+        <label for="sucursal">Local</label>
+        <select id="sucursal" name="sucursal" class="entrada">
+          {% for s in sucursales %}<option value="{{ s.id }}" {% if s.id|stringformat:"s" == sucursal_defecto|stringformat:"s" %}selected{% endif %}>{{ s.nombre }}</option>{% endfor %}
+        </select>
+        <p data-error="sucursal" class="error-campo">{{ errores.sucursal }}</p>
+      </div>
+      <div class="campo">
+        <label for="servicio">Servicio</label>
+        <select id="servicio" name="servicio" class="entrada">
+          <option value="">Selecciona un servicio</option>
+          {% regroup servicios by categoria_cliente as grupos %}
+          {% for g in grupos %}<optgroup label="{{ g.grouper|default:'Otros' }}">
+            {% for s in g.list %}<option value="{{ s.id }}" data-nombre="{{ s.nombre }} ({{ s.categoria_cliente }})" data-duracion="{{ s.duracion_minutos }}" data-precio="{{ s.precio_base|clp }}" {% if s.id|stringformat:"s" == d.servicio %}selected{% endif %}>{{ s.nombre }} · {{ s.duracion_minutos }} min · {{ s.precio_base|clp }}</option>{% endfor %}
+          </optgroup>{% endfor %}
+        </select>
+        <p data-error="servicio" class="error-campo">{{ errores.servicio }}</p>
+      </div>
+      <div class="campo">
+        <label for="trabajadora">Trabajadora</label>
+        <select id="trabajadora" name="trabajadora" data-valor="{{ trabajadora_defecto }}" class="entrada"><option value="">Selecciona un servicio primero</option></select>
+        <p data-error="trabajadora" class="error-campo">{{ errores.trabajadora }}</p>
+      </div>
+      <div class="campo">
+        <label for="fecha">Fecha</label>
+        <input id="fecha" name="fecha" type="date" min="{{ hoy_iso }}" value="{{ fecha_defecto }}" class="entrada">
+        <p data-error="fecha" class="error-campo">{{ errores.fecha }}</p>
+      </div>
+      <div class="campo">
+        <span class="etiqueta">Horarios disponibles</span>
+        <input type="hidden" id="hora" name="hora" value="{{ hora_defecto }}">
+        <div id="slots" class="horarios"></div>
+        <p id="slots-msg" class="nota">Elige servicio, trabajadora y fecha para ver los horarios libres.</p>
+        <p data-error="hora" class="error-campo">{% if errores.rut or errores.nombre or errores.telefono or errores.email or errores.apellido %}{% else %}{% if paso == 2 %}{{ errores.hora }}{% endif %}{% endif %}</p>
+      </div>
+      <div id="resumen-paso2" class="caja-resumen oculto">
+        <h3>Resumen de la reserva</h3>
+        <p><span class="dato">Servicio:</span> <span class="valor" data-r="servicio"></span></p>
+        <p><span class="dato">Duración:</span> <span class="valor" data-r="duracion"></span></p>
+        <p><span class="dato">Precio:</span> <span class="valor" data-r="precio"></span></p>
+      </div>
+      <div class="botones-paso">
+        <button type="button" data-ir="1" class="boton boton-borde"><i data-lucide="chevron-left" class="icono"></i> Volver</button>
+        <button type="button" data-ir="3" class="boton boton-primario">Continuar <i data-lucide="chevron-right" class="icono"></i></button>
+      </div>
+    </section>
+
+    <section data-seccion="3" class="oculto">
+      <h2>Confirmación</h2>
+      <div class="caja-resumen">
+        <h3>Resumen de tu reserva</h3>
+        <p><span class="dato">Cliente:</span> <span class="valor" data-c="cliente"></span></p>
+        <p><span class="dato">RUT:</span> <span class="valor" data-c="rut"></span></p>
+        <p><span class="dato">Local:</span> <span class="valor" data-c="sucursal"></span></p>
+        <p><span class="dato">Servicio:</span> <span class="valor" data-c="servicio"></span></p>
+        <p><span class="dato">Fecha:</span> <span class="valor" data-c="fecha"></span></p>
+        <p><span class="dato">Hora:</span> <span class="valor" data-c="hora"></span></p>
+        <p><span class="dato">Trabajadora:</span> <span class="valor" data-c="trabajadora"></span></p>
+        <p><span class="dato">Precio:</span> <span class="valor" data-c="precio"></span></p>
+      </div>
+      <div class="botones-paso">
+        <button type="button" data-ir="2" class="boton boton-borde"><i data-lucide="chevron-left" class="icono"></i> Volver</button>
+        <button type="submit" class="boton boton-primario">Confirmar reserva</button>
+      </div>
+    </section>
+  </form>
+  {% endif %}
+
+  <div class="tarjeta aviso-qr">
+    <div class="cuadro"><i data-lucide="qr-code" class="icono"></i></div>
+    <div>
+      <h3>Código QR de reservas</h3>
+      <p>Los clientes acceden a este formulario escaneando un código QR en folletos o en el mesón de las sucursales: la dirección <code>{{ request.build_absolute_uri }}</code> no requiere iniciar sesión.</p>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% if not exito %}
+<script src="{% static 'agenda/js/reservar.js' %}"></script>
+{% endif %}
+{% endblock %}

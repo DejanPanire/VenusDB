@@ -1,0 +1,43 @@
+{% extends "agenda/empleado/base_empleado.html" %}{% load venus %}
+{% block titulo %}Reservas asignadas · Venus{% endblock %}
+{% block contenido %}
+<header class="encabezado">
+  <div>
+    <h1>Reservas asignadas</h1>
+    <p>Las reservas que los clientes agendaron contigo</p>
+  </div>
+</header>
+
+<nav class="filtros">
+  {% for clave, etiqueta in filtros %}
+  <a href="?filtro={{ clave }}" class="pestana {% if filtro == clave %}activa{% endif %}">{{ etiqueta }}</a>
+  {% endfor %}
+</nav>
+
+<div class="tarjeta lista-reservas">
+  {% for r in reservas %}
+  <div class="fila">
+    <div class="cuando">
+      <p>{{ r.fecha|date:"D d/m/Y" }}</p>
+      <p class="texto-chico texto-suave">{{ r.hora_inicio|time:"H:i" }} – {{ r.hora_fin|time:"H:i" }}</p>
+    </div>
+    <div class="quien">
+      <p>{{ r.cliente|nombre_completo }}</p>
+      <p class="texto-chico texto-suave">{{ r.servicio_txt }} · {{ r.precio_txt }}</p>
+    </div>
+    <span class="etiqueta-estado {{ r.estado|clase_estado }}">{{ r.estado }}</span>
+    <form method="post" action="{% url 'cambiar_estado_reserva' r.pk %}">{% csrf_token %}
+      <input type="hidden" name="volver" value="{{ request.get_full_path }}">
+      {% if r.estado == "Pendiente" %}
+      <button name="accion" value="confirmar" class="boton boton-verde boton-chico">Confirmar</button>
+      {% endif %}
+      {% if r.estado == "Pendiente" or r.estado == "Confirmada" %}
+      <button name="accion" value="cancelar" data-confirmar="¿Cancelar esta reserva?" class="boton boton-cancelar boton-chico">Cancelar</button>
+      {% endif %}
+    </form>
+  </div>
+  {% empty %}
+  <p class="vacio tarjeta-vacia">No hay reservas en esta vista.</p>
+  {% endfor %}
+</div>
+{% endblock %}

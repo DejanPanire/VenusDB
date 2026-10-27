@@ -1,0 +1,40 @@
+{% extends "agenda/base.html" %}{% load static %}
+{% block body %}
+<div class="app">
+  <aside class="menu-lateral">
+    <div class="menu-logo">
+      <div class="caja-logo"><img src="{% static 'agenda/img/venus-logo.svg' %}" alt="Venus · Centro de Estética"></div>
+      <p>Sistema de gestión</p>
+    </div>
+
+    <div class="menu-usuario">
+      <p class="nombre">{{ user.get_full_name|default:user.username }}</p>
+      <p class="rol">{{ rol_texto }}</p>
+      {% if es_propietario %}
+      <form method="post" action="{% url 'cambiar_sucursal' %}">{% csrf_token %}
+        <input type="hidden" name="volver" value="{{ request.get_full_path }}">
+        <label for="local-activo">Local activo</label>
+        <select id="local-activo" name="sucursal" data-autoenviar>
+          {% for l in locales_menu %}<option value="{{ l.id }}" {% if l.id == local_activo.id %}selected{% endif %}>{{ l.nombre }}</option>{% endfor %}
+        </select>
+      </form>
+      {% else %}
+      <p class="dato"><i data-lucide="map-pin" class="icono-chico"></i> {{ local_activo.nombre }}</p>
+      {% endif %}
+    </div>
+
+    <nav class="menu-nav">
+      <a href="{% url 'calendario' %}" class="menu-enlace {% if seccion == 'calendario' %}activo{% endif %}">
+        <i data-lucide="calendar-days" class="icono"></i> Calendario y agenda</a>
+      <a href="{% url 'reservar' %}" class="menu-enlace {% if seccion == 'reservar' %}activo{% endif %}">
+        <i data-lucide="users" class="icono"></i> Registro de clientes y reservas</a>
+    </nav>
+    <a href="{% url 'logout' %}" class="menu-enlace"><i data-lucide="log-out" class="icono"></i> Cerrar sesión</a>
+  </aside>
+
+  <main class="contenido">
+    {% include "agenda/mensajes.html" %}
+    {% block contenido %}{% endblock %}
+  </main>
+</div>
+{% endblock %}

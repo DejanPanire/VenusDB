@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'funciones_app',
+    'agenda',
 ]
 
 MIDDLEWARE = [
@@ -48,6 +49,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'agenda.context_processors.rol',
             ],
         },
     },
@@ -94,3 +96,11 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
+
+# agenda: login con la tabla Usuario; ModelBackend para el superusuario
+AUTHENTICATION_BACKENDS = [
+    'agenda.backends.UsuarioVenusBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+LOGIN_URL = 'login'
+LOGOUT_REDIRECT_URL = 'login'

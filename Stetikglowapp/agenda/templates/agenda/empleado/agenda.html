@@ -1,0 +1,52 @@
+{% extends "agenda/empleado/base_empleado.html" %}{% load venus %}
+{% block titulo %}Mi agenda · Venus{% endblock %}
+{% block contenido %}
+<header class="encabezado">
+  <div>
+    <h1>Mi agenda</h1>
+    <p>Hola, {{ mi_trabajador.nombre }} · {{ mi_trabajador.sucursal.nombre }}</p>
+  </div>
+</header>
+
+<div class="tarjeta selector-dia">
+  <a href="?fecha={{ fecha_ant|date:'Y-m-d' }}" class="boton boton-borde boton-cuadrado" aria-label="Día anterior"><i data-lucide="chevron-left" class="icono"></i></a>
+  <span class="selector-fecha"><span class="fecha-texto">{{ fecha_texto }}</span></span>
+  <a href="?fecha={{ fecha_sig|date:'Y-m-d' }}" class="boton boton-borde boton-cuadrado" aria-label="Día siguiente"><i data-lucide="chevron-right" class="icono"></i></a>
+  <a href="?fecha={{ hoy|date:'Y-m-d' }}" class="boton boton-borde">Hoy</a>
+  <form method="get" class="selector-fecha"><input type="date" name="fecha" value="{{ fecha|date:'Y-m-d' }}" data-autoenviar></form>
+</div>
+
+<div class="contadores">
+  {% for etiqueta, n in resumen %}
+  <div class="tarjeta">
+    <p class="texto-chico texto-suave">{{ etiqueta }}</p>
+    <p class="numero">{{ n }}</p>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="tarjeta">
+  <h3>Citas del día <span class="texto-suave">({{ n_reservas }})</span></h3>
+  {% for tipo, hora, obj in items %}
+    {% if tipo == "reserva" %}
+    <div class="cita">
+      <div class="horas">{{ obj.hora_inicio|time:"H:i" }}<span> – {{ obj.hora_fin|time:"H:i" }}</span></div>
+      <div class="caja {{ obj.estado|clase_estado }}">
+        <div class="arriba">
+          <p>{{ obj.cliente|nombre_completo }}</p>
+          <span>{{ obj.estado }}</span>
+        </div>
+        <p class="texto-chico">{{ obj.servicio_txt }} · {{ obj.duracion }} min · {{ obj.precio_txt }}</p>
+      </div>
+    </div>
+    {% else %}
+    <div class="cita cita-bloqueo">
+      <div class="horas">{{ obj.hora_inicio|time:"H:i" }} – {{ obj.hora_fin|time:"H:i" }}</div>
+      <div class="caja">{{ obj.motivo }}</div>
+    </div>
+    {% endif %}
+  {% empty %}
+    <p class="vacio tarjeta-vacia">No tienes citas este día.</p>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends "agenda/base.html" %}{% load static %}
+{% block titulo %}Iniciar sesión · Venus{% endblock %}
+{% block body %}
+<div class="login">
+  <div class="login-lado">
+    <span class="circulo circulo-1"></span>
+    <span class="circulo circulo-2"></span>
+    <span class="circulo circulo-3"></span>
+
+    <div>
+      <div class="login-logo"><img src="{% static 'agenda/img/venus-logo.svg' %}" alt="Venus · Centro de Estética"></div>
+      <p class="login-ciudad">Calama, Chile</p>
+    </div>
+
+    <div>
+      <h2 class="titulo-serif">Bienvenida al sistema de gestión</h2>
+      <p class="bajada">Administra reservas, clientes y operaciones de nuestros tres locales en un solo lugar.</p>
+      <div class="login-modulos">
+        <div><i data-lucide="calendar-days" class="icono"></i> Reservas</div>
+        <div><i data-lucide="users" class="icono"></i> Clientes</div>
+        <div><i data-lucide="store" class="icono"></i> Locales</div>
+        <div><i data-lucide="bar-chart-3" class="icono"></i> Indicadores</div>
+      </div>
+    </div>
+
+    <p class="login-pie">© {% now "Y" %} Venus · Centro de Estética</p>
+  </div>
+
+  <div class="login-formulario">
+    <div class="tarjeta login-caja">
+      <img src="{% static 'agenda/img/venus-logo.svg' %}" alt="Venus · Centro de Estética" class="logo-movil">
+      <h2>Iniciar sesión</h2>
+      <p class="bajada">Ingresa tus credenciales para continuar</p>
+
+      <form method="post" novalidate>
+        {% csrf_token %}
+        <div class="campo">
+          <label for="email">Usuario</label>
+          <input id="email" name="email" type="text" autocomplete="username" value="{{ email }}" placeholder="usuario@antonia.cl" class="entrada">
+          {% if errores.email %}<p class="error-campo">{{ errores.email }}</p>{% endif %}
+        </div>
+        <div class="campo">
+          <label for="password">Contraseña</label>
+          <div class="campo-clave">
+            <input id="password" name="password" type="password" placeholder="••••••••" class="entrada">
+            <button type="button" id="toggle-pass" aria-label="Mostrar contraseña"><i data-lucide="eye" class="icono"></i></button>
+          </div>
+          {% if errores.password %}<p class="error-campo">{{ errores.password }}</p>{% endif %}
+        </div>
+        {% if error %}<div class="alerta alerta-error">{{ error }}</div>{% endif %}
+        <button type="submit" class="boton boton-primario boton-ancho boton-grande">Ingresar al sistema</button>
+      </form>
+
+      <div class="cuentas-demo">
+        <p>Cuentas de demostración (clave: <code>demo123</code>)</p>
+        <ul>
+          <li><span>Propietaria:</span> propietaria@antonia.cl</li>
+          <li><span>Vargas 1899:</span> vargas@antonia.cl</li>
+          <li><span>Bañados Espinoza 1901:</span> banados@antonia.cl</li>
+          <li><span>Mall Plaza Calama:</span> mall@antonia.cl</li>
+          <li><span>Empleada (María, Vargas):</span> maria.vargas@antonia.cl</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{% static 'agenda/js/login.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,259 @@
+{% extends "agenda/base_app.html" %}{% load venus %}
+{% block titulo %}Agenda · Venus{% endblock %}
+{% block contenido %}
+<header class="encabezado">
+  <div>
+    <h1>Agenda múltiple</h1>
+    <p>{{ sucursal.nombre }}</p>
+  </div>
+  <a href="{% url 'reservar' %}?fecha={{ fecha|date:'Y-m-d' }}" class="boton boton-primario"><i data-lucide="plus" class="icono"></i> Nueva reserva</a>
+</header>
+
+<nav class="pestanas">
+  {% for id, etiqueta, icono in tabs %}
+  <a href="?fecha={{ fecha|date:'Y-m-d' }}&trabajador={{ trabajador_id }}&servicio={{ servicio_id }}&q={{ q|urlencode }}&tab={{ id }}"
+     class="pestana {% if tab == id %}activa{% endif %}"><i data-lucide="{{ icono }}" class="icono"></i> {{ etiqueta }}</a>
+  {% endfor %}
+</nav>
+
+<form method="get" class="barra-filtros">
+  <input type="hidden" name="tab" value="{{ tab }}">
+  <div class="selector-fecha">
+    <a href="?fecha={{ fecha_ant|date:'Y-m-d' }}&{{ qs_base }}" class="boton boton-borde boton-cuadrado" aria-label="Día anterior"><i data-lucide="chevron-left" class="icono"></i></a>
+    <span class="fecha-texto">{{ fecha_texto }}</span>
+    <a href="?fecha={{ fecha_sig|date:'Y-m-d' }}&{{ qs_base }}" class="boton boton-borde boton-cuadrado" aria-label="Día siguiente"><i data-lucide="chevron-right" class="icono"></i></a>
+    <a href="?fecha={{ hoy|date:'Y-m-d' }}&{{ qs_base }}" class="boton boton-borde">Hoy</a>
+    <input type="date" name="fecha" value="{{ fecha|date:'Y-m-d' }}" data-autoenviar>
+  </div>
+  <select name="trabajador" data-autoenviar class="entrada">
+    <option value="todos">Todas las trabajadoras</option>
+    {% for t in trabajadores %}<option value="{{ t.id }}" {% if trabajador_id == t.id|stringformat:"s" %}selected{% endif %}>{{ t|nombre_completo }} - {{ t.especialidad|default:t.rol }}</option>{% endfor %}
+  </select>
+  <select name="servicio" data-autoenviar class="entrada">
+    <option value="todos">Todos los servicios</option>
+    {% regroup servicios by categoria_cliente as grupos %}
+    {% for g in grupos %}<optgroup label="{{ g.grouper|default:'Otros' }}">
+      {% for s in g.list %}<option value="{{ s.id }}" {% if servicio_id == s.id|stringformat:"s" %}selected{% endif %}>{{ s.nombre }}</option>{% endfor %}
+    </optgroup>{% endfor %}
+  </select>
+  <div class="buscador con-icono">
+    <i data-lucide="search" class="icono"></i>
+    <input name="q" value="{{ q }}" placeholder="Buscar por cliente..." class="entrada">
+  </div>
+</form>
+
+<div class="calendario">
+  <div class="calendario-principal">
+    <div class="tarjeta">
+
+      {% if tab == "agenda" %}
+      <h3>Agenda del día</h3>
+      <div class="agenda">
+        <div class="agenda-interior">
+          <div class="agenda-cabecera">
+            <div class="espacio-horas"></div>
+            {% for col in columnas %}
+            <div class="agenda-persona">
+              <div class="avatar" style="background-color: {{ col.trabajador|color }}">{{ col.trabajador.nombre|inicial }}</div>
+              <p class="nombre">{{ col.trabajador.nombre }}</p>
+              <p class="especialidad">{{ col.trabajador.especialidad|default:col.trabajador.rol }}</p>
+            </div>
+            {% endfor %}
+          </div>
+
+          <div class="agenda-cuerpo">
+            <div class="agenda-horas">
+              {% for f in franjas %}<div>{{ f }}</div>{% endfor %}
+            </div>
+            <div class="agenda-columnas">
+              {% for col in columnas %}
+              <div class="agenda-columna">
+                {% for f in franjas %}
+                <a href="{% url 'reservar' %}?fecha={{ fecha|date:'Y-m-d' }}&trabajadora={{ col.trabajador.id }}&hora={{ f }}&sucursal={{ sucursal.id }}"
+                   class="agenda-franja" title="Reservar {{ f }} con {{ col.trabajador.nombre }}"></a>
+                {% endfor %}
+
+                {% for b in col.bloqueos %}
+                <div class="agenda-bloqueo" style="{{ b.estilo }}">{{ b.motivo }}</div>
+                {% endfor %}
+
+                {% for r in col.reservas %}
+                <a href="?fecha={{ fecha|date:'Y-m-d' }}&{{ qs_base }}&reserva={{ r.id }}"
+                   title="{{ r.hora_inicio|time:'H:i' }} - {{ r.hora_fin|time:'H:i' }} · {{ r.cliente|nombre_completo }} · {{ r.servicio_txt }}"
+                   class="agenda-reserva {% if r.tamano == 'lg' %}grande{% endif %} {{ r.estado|clase_estado }}" style="{{ r.estilo }}">
+                  {% if r.tamano == "xs" %}
+                  <p class="hora una-linea">{{ r.hora_inicio|time:"H:i" }} · {{ r.cliente|nombre_completo }}</p>
+                  <p class="solo-al-pasar">{{ r.servicio_txt }}</p>
+                  {% else %}
+                  <p class="hora">{{ r.hora_inicio|time:"H:i" }} - {{ r.hora_fin|time:"H:i" }}</p>
+                  <p class="cliente una-linea">{{ r.cliente|nombre_completo }}</p>
+                  <p {% if r.tamano != 'lg' %}class="una-linea"{% endif %}>{{ r.servicio_txt }}</p>
+                  {% endif %}
+                </a>
+                {% endfor %}
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {% if sin_asignar %}
+      <div class="aviso-sin-asignar">
+        <p class="subtitulo">Reservas sin trabajadora asignada</p>
+        {% for r in sin_asignar %}<a href="?fecha={{ fecha|date:'Y-m-d' }}&{{ qs_base }}&reserva={{ r.id }}">{{ r.hora_inicio|time:"H:i" }} · {{ r.cliente|nombre_completo }} · {{ r.servicio_txt }}</a>{% endfor %}
+      </div>
+      {% endif %}
+
+      {% elif tab == "listado" %}
+      <h3>Listado de citas</h3>
+      {% if reservas %}
+      <div class="agenda">
+        <table class="tabla">
+          <thead>
+            <tr><th>Hora</th><th>Cliente</th><th>Servicio</th><th>Trabajadora</th><th>Estado</th></tr>
+          </thead>
+          <tbody>
+            {% for r in reservas %}
+            <tr>
+              <td><a href="?fecha={{ fecha|date:'Y-m-d' }}&{{ qs_base }}&reserva={{ r.id }}">{{ r.hora_inicio|time:"H:i" }} - {{ r.hora_fin|time:"H:i" }}</a></td>
+              <td>{{ r.cliente|nombre_completo }}</td>
+              <td>{{ r.servicio_txt }}</td>
+              <td>{{ r.trabajador.nombre|default:"Sin asignar" }}</td>
+              <td><span class="etiqueta-estado {{ r.estado|clase_estado }}">{{ r.estado }}</span></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p class="vacio">No hay citas para este día con los filtros aplicados.</p>
+      {% endif %}
+
+      {% elif tab == "resumen" %}
+      <h3>Resumen de citas · {{ fecha_texto }}</h3>
+      <div class="resumen-estados">
+        {% for valor, etiqueta, n in resumen %}
+        <div class="{{ valor|clase_estado }}">
+          <p class="numero">{{ n }}</p>
+          <p>{{ etiqueta }}s</p>
+        </div>
+        {% endfor %}
+      </div>
+
+      {% else %}
+      <h3>Sala de espera</h3>
+      {% if sala_espera %}
+      <ul class="sala-espera">
+        {% for r in sala_espera %}
+        <li>
+          <div>
+            <p class="nombre">{{ r.cliente|nombre_completo }}</p>
+            <p class="texto-chico texto-suave">{{ r.servicio_txt }} · {{ r.trabajador.nombre|default:"Sin asignar" }} · {{ r.hora_inicio|time:"H:i" }}</p>
+          </div>
+          <form method="post" action="{% url 'cambiar_estado' r.pk %}">{% csrf_token %}
+            <input type="hidden" name="accion" value="completar">
+            <input type="hidden" name="volver" value="{{ request.get_full_path }}">
+            <button class="boton boton-verde boton-chico">Marcar atendida</button>
+          </form>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p class="vacio">No hay clientas con reserva confirmada en espera (se muestra solo para la fecha de hoy).</p>
+      {% endif %}
+      {% endif %}
+    </div>
+
+    <div class="tarjeta leyenda">
+      <p>Leyenda de estados</p>
+      <div class="leyenda-items">
+        <span><span class="punto punto-pendiente"></span>Pendiente</span>
+        <span><span class="punto punto-confirmada"></span>Confirmada</span>
+        <span><span class="punto punto-completada"></span>Completada</span>
+        <span><span class="punto punto-cancelada"></span>Cancelada</span>
+        <span><span class="punto punto-bloqueo"></span>Fuera de turno / colación</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="calendario-lateral">
+    {% if seleccionada %}
+    <div class="tarjeta">
+      <h3>Detalle de reserva</h3>
+      <dl class="detalle">
+        <div><dt>Cliente</dt><dd>{{ seleccionada.cliente|nombre_completo }}</dd></div>
+        <div><dt>Contacto</dt><dd>{{ seleccionada.cliente.telefono }} · {{ seleccionada.cliente.correo|default:"sin correo" }}</dd></div>
+        <div><dt>Servicio</dt><dd>{{ seleccionada.servicio_txt }} · {{ seleccionada.precio_txt }}</dd></div>
+        <div><dt>Horario</dt><dd>{{ seleccionada.fecha|date:"d/m/Y" }} · {{ seleccionada.hora_inicio|time:"H:i" }} - {{ seleccionada.hora_fin|time:"H:i" }}</dd></div>
+        <div><dt>Trabajadora</dt><dd>{{ seleccionada.trabajador|nombre_completo|default:"Sin asignar" }}</dd></div>
+        <div><dt>Origen</dt><dd>{{ seleccionada.origen|default:"—" }}</dd></div>
+        <div><dt>Estado</dt><dd><span class="etiqueta-estado {{ seleccionada.estado|clase_estado }}">{{ seleccionada.estado }}</span></dd></div>
+
+        <div class="acciones">
+          {% if seleccionada.estado == "Pendiente" %}
+          <form method="post" action="{% url 'cambiar_estado' seleccionada.pk %}">{% csrf_token %}
+            <input type="hidden" name="accion" value="confirmar">
+            <input type="hidden" name="volver" value="{{ request.get_full_path }}">
+            <button class="boton boton-verde boton-ancho">Confirmar reserva</button>
+          </form>
+          {% elif seleccionada.estado == "Confirmada" %}
+          <form method="post" action="{% url 'cambiar_estado' seleccionada.pk %}">{% csrf_token %}
+            <input type="hidden" name="accion" value="completar">
+            <input type="hidden" name="volver" value="{{ request.get_full_path }}">
+            <button class="boton boton-verde boton-ancho">Marcar como completada</button>
+          </form>
+          {% endif %}
+          {% if seleccionada.estado == "Pendiente" or seleccionada.estado == "Confirmada" %}
+          <button type="button" data-abrir-dialogo="dlg-cancelar" class="boton boton-cancelar boton-ancho">Cancelar reserva</button>
+          {% endif %}
+        </div>
+      </dl>
+    </div>
+
+    <dialog id="dlg-cancelar" class="dialogo">
+      <h3>Cancelar reserva</h3>
+      <p>¿Estás segura de que deseas cancelar la reserva de {{ seleccionada.cliente|nombre_completo }}? El horario quedará disponible nuevamente.</p>
+      <form method="post" action="{% url 'cambiar_estado' seleccionada.pk %}">{% csrf_token %}
+        <input type="hidden" name="accion" value="cancelar">
+        <input type="hidden" name="volver" value="{{ request.get_full_path }}">
+        <button class="boton boton-rojo">Sí, cancelar</button>
+        <button type="button" data-cerrar-dialogo class="boton boton-borde">No, mantener</button>
+      </form>
+    </dialog>
+    {% else %}
+    <div class="tarjeta tarjeta-vacia">
+      <i data-lucide="calendar" class="icono"></i>
+      <p>Selecciona una reserva para ver sus detalles</p>
+    </div>
+    {% endif %}
+
+    <div class="tarjeta">
+      <h3>Disponibilidad</h3>
+      <p class="ubicacion"><i data-lucide="map-pin" class="icono"></i> {{ sucursal.nombre }} · Horario: 10:00 - 20:00</p>
+
+      <p class="subtitulo">Horarios ocupados</p>
+      <div class="lista-horas">
+        {% for r in ocupados %}
+        <div class="hora-ocupada"><i data-lucide="clock" class="icono"></i> {{ r.hora_inicio|time:"H:i" }} - {{ r.hora_fin|time:"H:i" }}</div>
+        {% empty %}
+        <p class="vacio">Sin reservas activas.</p>
+        {% endfor %}
+      </div>
+
+      <p class="subtitulo">Próximos horarios disponibles</p>
+      {% if trabajador_id != "todos" %}
+      <div class="lista-horas">
+        {% for h in libres %}
+        <a href="{% url 'reservar' %}?fecha={{ fecha|date:'Y-m-d' }}&trabajadora={{ trabajador_id }}&hora={{ h }}&sucursal={{ sucursal.id }}" class="hora-libre"><i data-lucide="check-circle-2" class="icono"></i> {{ h }}</a>
+        {% empty %}
+        <p class="vacio">No quedan horarios libres para este día.</p>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p class="vacio">Elige una trabajadora para ver sus horarios libres.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120" role="img" aria-label="Venus · Centro de Estética"><defs>
+  <linearGradient id="rosa" gradientUnits="userSpaceOnUse" x1="28" y1="14" x2="92" y2="112"><stop offset="0" stop-color="#EDB0C8"/><stop offset=".55" stop-color="#D982A5"/><stop offset="1" stop-color="#B85F85"/></linearGradient>
+  <linearGradient id="espejo" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#F8D5E3"/></linearGradient>
+</defs><g>
+  <circle cx="60" cy="47" r="29" fill="url(#espejo)" stroke="url(#rosa)" stroke-width="8"/>
+  <path d="M42 36 A20 20 0 0 1 56 26" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".9"/>
+  <path d="M60 36 C61.2 43.5 63.5 45.8 71 47 C63.5 48.2 61.2 50.5 60 58 C58.8 50.5 56.5 48.2 49 47 C56.5 45.8 58.8 43.5 60 36Z" fill="url(#rosa)"/>
+  <path d="M60 76 V110" stroke="url(#rosa)" stroke-width="8" stroke-linecap="round"/>
+  <path d="M46 94 H74" stroke="url(#rosa)" stroke-width="8" stroke-linecap="round"/>
+  <path d="M97 14 C97.6 18 98.8 19.2 103 19.8 C98.8 20.4 97.6 21.6 97 26 C96.4 21.6 95.2 20.4 91 19.8 C95.2 19.2 96.4 18 97 14Z" fill="#E8A1BD"/>
+</g></svg>

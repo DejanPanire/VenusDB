@@ -1,0 +1,20 @@
+{% load static %}<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titulo %}Venus · Centro de Estética{% endblock %}</title>
+  <link rel="icon" type="image/svg+xml" href="{% static 'agenda/img/favicon.svg' %}">
+  <link rel="alternate icon" href="{% static 'agenda/img/favicon.ico' %}">
+  <link rel="apple-touch-icon" href="{% static 'agenda/img/apple-touch-icon.png' %}">
+  <meta name="theme-color" content="#F4C2D7">
+  <link rel="stylesheet" href="{% static 'agenda/css/venus.css' %}">
+  <script src="https://unpkg.com/lucide@0.383.0/dist/umd/lucide.min.js"></script>
+  {% block head %}{% endblock %}
+</head>
+<body>
+  {% block body %}{% endblock %}
+  <script src="{% static 'agenda/js/comun.js' %}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>
