@@ -1,0 +1,8 @@
+{% if locales|length > 1 %}
+<nav class="filtros selector-local" aria-label="Local">
+  <span class="texto-chico texto-suave">Local:</span>
+  {% for l in locales %}
+  <a href="?local={{ l.id }}{% if extra_qs %}&{{ extra_qs }}{% endif %}" class="pestana {% if l.id == local.id %}activa{% endif %}"><i data-lucide="map-pin" class="icono-chico"></i> {{ l.nombre }}</a>
+  {% endfor %}
+</nav>
+{% endif %}

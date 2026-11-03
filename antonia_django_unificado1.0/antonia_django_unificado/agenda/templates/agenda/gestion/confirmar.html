@@ -1,0 +1,13 @@
+{% extends "agenda/base_app.html" %}
+{% block titulo %}{{ titulo }} · Venus{% endblock %}
+{% block contenido %}
+<div class="tarjeta confirmar">
+  <div class="icono-alerta"><i data-lucide="alert-triangle" class="icono"></i></div>
+  <h2>{{ titulo }}</h2>
+  <p>{{ texto }}</p>
+  <form method="post">{% csrf_token %}
+    <a href="{{ volver }}" class="boton boton-borde">Cancelar</a>
+    <button class="boton boton-rojo">{{ boton }}</button>
+  </form>
+</div>
+{% endblock %}

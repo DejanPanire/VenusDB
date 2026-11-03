@@ -1,0 +1,37 @@
+{% extends "agenda/base.html" %}{% load venus %}{% load static %}
+{% block body %}
+<div class="app">
+  <aside class="menu-lateral">
+    <div class="menu-logo">
+      <div class="caja-logo"><img src="{% static 'agenda/img/venus-logo.svg' %}" alt="Venus · Centro de Estética"></div>
+      <p>Panel de empleada</p>
+    </div>
+
+    <div class="menu-usuario">
+      <div class="perfil-corto">
+        <div class="avatar avatar-chico" style="background-color: {{ mi_trabajador|color }}">{{ mi_trabajador.nombre|inicial }}</div>
+        <div>
+          <p class="nombre">{{ mi_trabajador|nombre_completo }}</p>
+          <p class="texto-chico texto-suave">{{ mi_trabajador.rol }}</p>
+        </div>
+      </div>
+      <p class="dato"><i data-lucide="map-pin" class="icono-chico"></i> {{ mi_trabajador.sucursal.nombre }}</p>
+      {% if mi_trabajador.especialidad %}
+      <p class="dato"><i data-lucide="sparkles" class="icono-chico"></i> {{ mi_trabajador.especialidad }}</p>
+      {% endif %}
+    </div>
+
+    <nav class="menu-nav">
+      {% for clave, url, icono, etiqueta in menu_empleado %}
+      <a href="{% url url %}" class="menu-enlace {% if seccion == clave %}activo{% endif %}"><i data-lucide="{{ icono }}" class="icono"></i> {{ etiqueta }}</a>
+      {% endfor %}
+    </nav>
+    <a href="{% url 'logout' %}" class="menu-enlace"><i data-lucide="log-out" class="icono"></i> Cerrar sesión</a>
+  </aside>
+
+  <main class="contenido">
+    {% include "agenda/mensajes.html" %}
+    {% block contenido %}{% endblock %}
+  </main>
+</div>
+{% endblock %}

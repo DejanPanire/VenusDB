@@ -1,0 +1,65 @@
+{% extends "agenda/base_app.html" %}
+{% block titulo %}Plan de inventario · Venus{% endblock %}
+{% block contenido %}
+<header class="encabezado">
+  <div>
+    <h1>Plan de inventario</h1>
+    <p>Solicitudes de reposición de insumos · {{ local.nombre }}</p>
+  </div>
+  <div class="acciones-encabezado">
+    <a href="{% url 'inventario' %}?local={{ local.id }}" class="boton boton-borde"><i data-lucide="chevron-left" class="icono"></i> Volver al inventario</a>
+    <a href="{% url 'plan_nuevo' %}?local={{ local.id }}" class="boton boton-primario"><i data-lucide="plus" class="icono"></i> Nuevo plan</a>
+  </div>
+</header>
+
+{% include "agenda/gestion/_selector_local.html" %}
+
+<details class="tarjeta acordeon" open>
+  <summary><span class="etiqueta-estado estado-pendiente">En proceso</span> <span class="texto-suave">{{ en_proceso|length }} solicitudes activas</span></summary>
+  {% if en_proceso %}
+  <div class="agenda">
+    <table class="tabla">
+      <thead><tr><th>Plan</th><th>Detalle</th><th>Local</th><th>Solicitado</th><th></th></tr></thead>
+      <tbody>
+        {% for plan in en_proceso %}
+        <tr>
+          <td class="texto-chico texto-suave">#{{ plan.id }}</td>
+          <td><p class="negrita">{{ plan.titulo }}</p><p class="texto-chico texto-suave">{{ plan.cantidad }} × {{ plan.producto.nombre }}</p></td>
+          <td>{{ plan.sucursal.nombre }}</td>
+          <td>{{ plan.fecha_solicitud|date:"d/m/Y" }}</td>
+          <td class="acciones-tabla">
+            <form method="post" action="{% url 'plan_recibir' plan.id %}">{% csrf_token %}
+              <button class="boton boton-verde boton-chico" data-confirmar="¿Confirmas que llegaron {{ plan.cantidad }} unidades? Se sumarán al inventario."><i data-lucide="check" class="icono"></i> Recibir</button>
+            </form>
+            <a href="{% url 'plan_editar' plan.id %}" class="boton boton-borde boton-chico"><i data-lucide="pencil" class="icono"></i> Editar</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}<p class="vacio">No hay insumos pendientes en proceso.</p>{% endif %}
+</details>
+
+<details class="tarjeta acordeon">
+  <summary><span class="etiqueta-estado estado-completada">Completados</span> <span class="texto-suave">{{ completados|length }} recibidos</span></summary>
+  {% if completados %}
+  <div class="agenda">
+    <table class="tabla">
+      <thead><tr><th>Plan</th><th>Detalle</th><th>Local</th><th>Solicitado</th><th>Recibido</th></tr></thead>
+      <tbody>
+        {% for plan in completados %}
+        <tr>
+          <td class="texto-chico texto-suave">#{{ plan.id }}</td>
+          <td><p class="negrita">{{ plan.titulo }}</p><p class="texto-chico texto-suave">{{ plan.cantidad }} × {{ plan.producto.nombre }}</p></td>
+          <td>{{ plan.sucursal.nombre }}</td>
+          <td>{{ plan.fecha_solicitud|date:"d/m/Y" }}</td>
+          <td>{{ plan.fecha_actualizacion|date:"d/m/Y H:i" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}<p class="vacio">No hay planes completados.</p>{% endif %}
+</details>
+{% endblock %}
