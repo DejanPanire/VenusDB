@@ -117,12 +117,15 @@ class ProductoInsumo(models.Model):
     nombre = models.CharField(max_length=100)
     categoria = models.CharField(max_length=50, blank=True, null=True)
     descripcion = models.TextField(blank=True, null=True)
-
+    marca = models.CharField(max_length=100, blank=True, null=True) 
+    valor_de_compra = models.DecimalField(max_digits=10, decimal_places=2, default=0) 
+    stock = models.PositiveIntegerField(default=0) 
     stock_minimo = models.PositiveIntegerField(default=5)
     es_insumo = models.BooleanField(default=False)
+    unidad_medida = models.CharField(max_length=30, default='Unidades', blank=True, null=True)
 
     def __str__(self):
-        return self.nombre
+        return f"{self.nombre} ({self.stock} {self.unidad_medida})"
 
     class Meta:
         db_table = "funciones_app_productoinsumo"
