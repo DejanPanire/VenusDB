@@ -1,0 +1,36 @@
+{% extends "agenda/base_app.html" %}{% load venus %}
+{% block titulo %}Servicios · Venus{% endblock %}
+{% block contenido %}
+<header class="encabezado">
+  <div>
+    <h1>Servicios y precios</h1>
+    <p>Catálogo del centro (Formulario Tiempos de Atención)</p>
+  </div>
+  {% if puede_editar %}<a href="{% url 'servicio_nuevo' %}" class="boton boton-primario"><i data-lucide="plus" class="icono"></i> Nuevo servicio</a>{% endif %}
+</header>
+
+{% regroup servicios by categoria_cliente as grupos %}
+{% for g in grupos %}
+<details class="tarjeta acordeon" {% if forloop.first %}open{% endif %}>
+  <summary><span class="negrita">{{ g.grouper|default:"Otros" }}</span> <span class="texto-suave">{{ g.list|length }} servicios</span></summary>
+  <div class="agenda">
+    <table class="tabla">
+      <thead><tr><th>ID</th><th>Servicio</th><th>Duración</th><th>Precio</th>{% if puede_editar %}<th></th>{% endif %}</tr></thead>
+      <tbody>
+        {% for s in g.list %}
+        <tr>
+          <td class="texto-chico texto-suave">#{{ s.id }}</td>
+          <td>{{ s.nombre }}{% if s.descripcion %}<p class="texto-chico texto-suave">{{ s.descripcion }}</p>{% endif %}</td>
+          <td>{{ s.duracion_minutos }} min</td>
+          <td>{{ s.precio_base|clp }}</td>
+          {% if puede_editar %}<td class="acciones-tabla"><a href="{% url 'servicio_editar' s.id %}" class="boton boton-borde boton-chico"><i data-lucide="pencil" class="icono"></i> Editar</a></td>{% endif %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</details>
+{% empty %}
+<p class="vacio tarjeta tarjeta-vacia">No hay servicios. Ejecuta <code>python manage.py seed_demo</code>.</p>
+{% endfor %}
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends "agenda/base_app.html" %}{% load venus %}
+{% block titulo %}Ventas · Venus{% endblock %}
+{% block contenido %}
+<header class="encabezado">
+  <div>
+    <h1>Atenciones y ventas</h1>
+    <p>{{ local.nombre }} · {{ desde|date:"d/m/Y" }} al {{ hasta|date:"d/m/Y" }}</p>
+  </div>
+  <a href="{% url 'registrar_atencion' %}?local={{ local.id }}" class="boton boton-primario"><i data-lucide="plus" class="icono"></i> Registrar atención y cobro</a>
+</header>
+
+{% include "agenda/gestion/_selector_local.html" %}
+
+<form method="get" class="barra-filtros">
+  <input type="hidden" name="local" value="{{ local.id }}">
+  <label class="texto-chico texto-suave">Desde <input type="date" name="desde" value="{{ desde|date:'Y-m-d' }}" class="entrada" data-autoenviar></label>
+  <label class="texto-chico texto-suave">Hasta <input type="date" name="hasta" value="{{ hasta|date:'Y-m-d' }}" class="entrada" data-autoenviar></label>
+</form>
+
+<div class="contadores contadores-3">
+  <div class="tarjeta"><p class="texto-chico texto-suave">Total vendido</p><p class="numero">{{ total|clp }}</p></div>
+  <div class="tarjeta"><p class="texto-chico texto-suave">Ventas (boletas)</p><p class="numero">{{ n_ventas }}</p></div>
+  <div class="tarjeta"><p class="texto-chico texto-suave">Comisiones a pagar</p><p class="numero">{{ total_comision|clp }}</p></div>
+</div>
+
+<div class="calendario">
+  <div class="calendario-principal">
+    <div class="tarjeta">
+      <h3>Detalle de ventas</h3>
+      {% if ventas %}
+      <div class="agenda">
+        <table class="tabla">
+          <thead><tr><th>Fecha</th><th>Venta</th><th>Cliente</th><th>Servicios</th><th>Atendió</th><th>Pago</th><th>Total</th><th>Comisión</th></tr></thead>
+          <tbody>
+            {% for v in ventas %}
+            <tr>
+              <td>{{ v.fecha_hora|date:"d/m H:i" }}</td>
+              <td class="texto-chico">#{{ v.id }}{% if v.estado != "Pagada" %} <span class="etiqueta-estado {% if v.estado == 'Anulada' %}estado-cancelada{% else %}estado-pendiente{% endif %}">{{ v.estado }}</span>{% endif %}</td>
+              <td>{{ v.cliente|nombre_completo|default:"—" }}</td>
+              <td>{{ v.servicios_txt }}</td>
+              <td>{{ v.empleado.nombre|default:"—" }}</td>
+              <td class="texto-chico">{{ v.metodo }}</td>
+              <td>{{ v.total|clp }}</td>
+              <td>{{ v.comision|clp }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}<p class="vacio">No hay ventas en este período.</p>{% endif %}
+    </div>
+  </div>
+  <div class="calendario-lateral">
+    <div class="tarjeta">
+      <h3>Comisiones por trabajadora</h3>
+      {% for c in comisiones %}
+      <div class="fila-simple">
+        <p class="negrita">{{ c.NOMBRE }}</p>
+        <p class="texto-chico texto-suave">{{ c.SERVICIOS }} servicios · {{ c.TOTAL|clp }} vendido</p>
+        <p class="texto-verde">Comisión {{ c.COMISION|clp }}</p>
+      </div>
+      {% empty %}<p class="vacio">Sin comisiones en el período.</p>{% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

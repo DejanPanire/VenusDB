@@ -1,0 +1,124 @@
+{% extends "agenda/base.html" %}
+{% load static %}
+
+{% block title %}Plan de Inventario · Centro Estético Antonia{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="main-container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="fw-bold text-uppercase fs-4 mb-0" style="color: #4a2e35;">PLAN DE INVENTARIO</h3>
+            <a href="{% url 'plan_inventario_create' %}" class="btn-pink-antonia text-decoration-none">+ Create Nuevo Plan</a>
+        </div>
+
+        <div class="accordion mb-4" id="accordionPlanInventario">
+            <!-- COMPLETADOS -->
+            <div class="accordion-item border rounded mb-3 shadow-sm">
+                <h2 class="accordion-header" id="headingTodo">
+                    <button class="accordion-button collapsed bg-light d-flex justify-content-between align-items-center" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTodo" aria-expanded="false" aria-controls="collapseTodo">
+                        <div>
+                            <span class="fw-bold text-danger me-2">TODO</span>
+                            <span class="badge bg-secondary fs-6">{{ planes_completados.count }} completados</span>
+                        </div>
+                    </button>
+                </h2>
+                <div id="collapseTodo" class="accordion-collapse collapse" aria-labelledby="headingTodo" data-bs-parent="#accordionPlanInventario">
+                    <div class="accordion-body">
+                        <div class="table-responsive">
+                            <table class="table table-antonia align-middle border">
+                                <thead>
+                                    <tr style="background-color: #f9f0f2;">
+                                        <th>LISTA</th>
+                                        <th>Detalles</th>
+                                        <th>Locación</th>
+                                        <th>Fecha Solicitud</th>
+                                        <th>Estado ingreso</th>
+                                        <th>Fecha finalización</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for plan in planes_completados %}
+                                    <tr>
+                                        <td><input type="checkbox" checked disabled></td>
+                                        <td>
+                                            <div class="fw-bold">{{ plan.titulo }}</div>
+                                            <small class="text-muted">{{ plan.cantidad }} unidades</small>
+                                        </td>
+                                        <td>{{ plan.sucursal.nombre }}</td>
+                                        <td>{{ plan.fecha_solicitud|date:"M d, Y" }}</td>
+                                        <td><span class="badge bg-danger rounded-pill px-3">Completado</span></td>
+                                        <td>{{ plan.fecha_actualizacion|date:"M d, Y" }}</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted py-4">No hay planes completados registrados.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EN PROCESO -->
+            <div class="accordion-item border rounded shadow-sm">
+                <h2 class="accordion-header" id="headingEnProceso">
+                    <button class="accordion-button bg-light fw-bold text-danger" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEnProceso" aria-expanded="true" aria-controls="collapseEnProceso">
+                        EN PROCESO <span class="badge bg-light text-muted border fs-6 ms-2">{{ planes_en_proceso.count }} solicitudes activas</span>
+                    </button>
+                </h2>
+                <div id="collapseEnProceso" class="accordion-collapse collapse show" aria-labelledby="headingEnProceso" data-bs-parent="#accordionPlanInventario">
+                    <div class="accordion-body">
+                        <div class="table-responsive">
+                            <table class="table table-antonia align-middle border">
+                                <thead>
+                                    <tr style="background-color: #f9f0f2;">
+                                        <th>LISTA</th>
+                                        <th>Detalles</th>
+                                        <th>Locación</th>
+                                        <th>Fecha Solicitud</th>
+                                        <th>Estado ingreso</th>
+                                        <th class="text-center">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for plan in planes_en_proceso %}
+                                    <tr>
+                                        <td><input type="checkbox"></td>
+                                        <td>
+                                            <div class="fw-bold">{{ plan.titulo }}</div>
+                                            <small class="text-muted">{{ plan.cantidad }} unidades</small>
+                                        </td>
+                                        <td>{{ plan.sucursal.nombre }}</td>
+                                        <td>{{ plan.fecha_solicitud|date:"M d, Y" }}</td>
+                                        <td><span class="badge bg-warning text-dark rounded-pill px-3">Processing</span></td>
+                                        <td class="text-center">
+                                            <div class="d-flex gap-1 justify-content-center">
+                                                <form action="{% url 'plan_inventario_recibir' plan.id %}" method="post" style="display:inline;">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-sm btn-success py-0 px-2 fw-semibold border-0" title="Confirmar llegada">✔️ Recibir</button>
+                                                </form>
+                                                <a href="{% url 'plan_inventario_update' plan.id %}" class="btn btn-sm btn-outline-secondary py-0 px-2 text-decoration-none">✏️ Editar</a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted py-4">No hay insumos pendientes en proceso.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-3">
+            <a href="{% url 'inventario' %}" class="btn btn-outline-secondary btn-sm">← Volver al Inventario de Insumos</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
