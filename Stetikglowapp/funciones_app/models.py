@@ -446,3 +446,27 @@ class PlanInventario(models.Model):
         db_table = "funciones_app_planinventario"
         verbose_name = "Plan de Inventario"
         verbose_name_plural = "Planes de Inventario"
+
+class InventarioMovimiento(models.Model):
+    trabajador = models.ForeignKey(
+        Trabajador,
+        on_delete=models.CASCADE,
+        db_column="trabajador_id",
+        related_name="movimientos_inventario"
+    )
+    producto = models.ForeignKey(
+        ProductoInsumo,
+        on_delete=models.CASCADE,
+        db_column="producto_id",
+        related_name="movimientos"
+    )
+    cantidad = models.PositiveIntegerField()
+    fecha = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.trabajador.nombre} usó {self.cantidad} de {self.producto.nombre}"
+
+    class Meta:
+        db_table = "funciones_app_inventariomovimiento"
+        verbose_name = "Movimiento de Inventario"
+        verbose_name_plural = "Movimientos de Inventario"

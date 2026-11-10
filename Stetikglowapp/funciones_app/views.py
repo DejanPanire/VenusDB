@@ -5,6 +5,49 @@ from django.shortcuts import render, get_object_or_404, redirect
 from .models import *
 from .forms import *
 
+from datetime import date, timedelta
+from django.db.models import Sum
+
+def insumos_por_trabajador(request):
+    trabajadores = Trabajador.objects.all()
+    trabajador_id = request.GET.get('trabajador')
+    
+    # Rango por defecto: Semana actual (lunes a hoy)
+    hoy = date.today()
+    inicio_semana = hoy - timedelta(days=hoy.weekday())
+    
+    desde = request.GET.get('desde', str(inicio_semana))
+    hasta = request.GET.get('hasta', str(hoy))
+    
+    movimientos = []
+    total_items = 0
+    trabajador_seleccionado = None
+    
+    if trabajador_id:
+        trabajador_seleccionado = Trabajador.objects.filter(pk=trabajador_id).first()
+        
+        # Filtramos los movimientos/descuentos del trabajador en el rango de fechas
+        # (Asegúrate de tener un modelo o campo que relacione los movimientos de inventario con el trabajador, 
+        # o puedes ajustar esta consulta según la tabla donde registres el uso de insumos)
+        movimientos = InventarioMovimiento.objects.filter(
+            trabajador_id=trabajador_id,
+            fecha__date__gte=desde,
+            fecha__date__lte=hasta
+        ).select_related('producto').order_by('-fecha')
+        
+        total_items = movimientos.aggregate(total=Sum('cantidad'))['total'] or 0
+
+    context = {
+        'trabajadores': trabajadores,
+        'trabajador_seleccionado': trabajador_seleccionado,
+        'movimientos': movimientos,
+        'total_items': total_items,
+        'desde': desde,
+        'hasta': hasta,
+        'alertas_stock': obtener_alertas_stock()
+    }
+    return render(request, 'insumos_por_trabajador.html', context)
+
 def obtener_alertas_stock():
     return ProductoInsumo.objects.filter(stock__lte=F('stock_minimo'))
 
