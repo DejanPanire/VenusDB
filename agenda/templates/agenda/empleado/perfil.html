@@ -1,0 +1,25 @@
+{% extends "agenda/empleado/base_empleado.html" %}{% load venus %}
+{% block titulo %}Mi perfil · Venus{% endblock %}
+{% block contenido %}
+<header class="encabezado"><h1>Mi perfil</h1></header>
+
+<div class="tarjeta perfil">
+  <div class="perfil-cabecera">
+    <div class="avatar avatar-grande" style="background-color: {{ t|color }}">{{ t.nombre|inicial }}</div>
+    <div>
+      <p class="nombre">{{ t|nombre_completo }}</p>
+      <p class="texto-suave">{{ t.rol }}</p>
+    </div>
+  </div>
+  <dl class="perfil-datos">
+    <dt>Local</dt><dd>{{ t.sucursal.nombre }}</dd>
+    <dt>Especialidad</dt><dd>{{ t.especialidad|default:"Sin especialidad asignada" }}</dd>
+    <dt>Comisión</dt><dd>{{ t.porcentaje_comision }}%</dd>
+    <dt>RUT</dt><dd>{{ t.rut }}</dd>
+    <dt>Contrato</dt><dd>{{ t.tipo_contrato|default:"—" }}{% if t.modalidad_pago %} · {{ t.modalidad_pago }}{% endif %}</dd>
+    <dt>Usuario</dt><dd>{{ user.username }}</dd>
+    <dt>Atenciones este mes</dt><dd>{{ atenciones_mes }}</dd>
+  </dl>
+  <p class="nota">Para cambiar estos datos, habla con la administración.</p>
+</div>
+{% endblock %}

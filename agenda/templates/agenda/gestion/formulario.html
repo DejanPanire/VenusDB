@@ -1,0 +1,30 @@
+{% extends "agenda/base_app.html" %}
+{% block titulo %}{{ titulo }} · Venus{% endblock %}
+{% block contenido %}
+<header class="encabezado">
+  <div>
+    <h1>{{ titulo }}</h1>
+    {% if bajada %}<p>{{ bajada }}</p>{% endif %}
+  </div>
+  <a href="{{ volver }}" class="boton boton-borde"><i data-lucide="chevron-left" class="icono"></i> Volver</a>
+</header>
+
+<form method="post" class="tarjeta formulario-gestion" novalidate>
+  {% csrf_token %}
+  {% if form.non_field_errors %}<div class="alerta alerta-error">{{ form.non_field_errors|join:" " }}</div>{% endif %}
+  <div class="rejilla-campos">
+    {% for campo in form %}{% include "agenda/gestion/_campo.html" %}{% endfor %}
+  </div>
+  {% if categorias %}<datalist id="categorias">{% for c in categorias %}<option value="{{ c }}">{% endfor %}</datalist>{% endif %}
+  <div class="botones-paso">
+    <a href="{{ volver }}" class="boton boton-borde">Cancelar</a>
+    <button type="submit" class="boton boton-primario">{{ boton|default:"Guardar" }}</button>
+  </div>
+</form>
+
+{% if eliminar_url %}
+<form method="post" action="{{ eliminar_url }}" class="zona-peligro">{% csrf_token %}
+  <button class="boton boton-cancelar boton-chico" data-confirmar="¿Eliminar definitivamente?"><i data-lucide="trash-2" class="icono"></i> Eliminar</button>
+</form>
+{% endif %}
+{% endblock %}

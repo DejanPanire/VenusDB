@@ -1,0 +1,62 @@
+{% extends "agenda/base_app.html" %}
+{% block titulo %}Inventario · Venus{% endblock %}
+{% block contenido %}
+<header class="encabezado">
+  <div>
+    <h1>Módulo de insumos</h1>
+    <p>Control de materiales operativos para los servicios · {{ local.nombre }}</p>
+  </div>
+  <div class="acciones-encabezado">
+    <a href="{% url 'plan_inventario' %}?local={{ local.id }}" class="boton boton-borde"><i data-lucide="clipboard-list" class="icono"></i> Plan de inventario{% if planes_activos %} <span class="contador">{{ planes_activos }}</span>{% endif %}</a>
+    <a href="{% url 'inventario_nuevo' %}?local={{ local.id }}" class="boton boton-primario"><i data-lucide="plus" class="icono"></i> Añadir insumo</a>
+  </div>
+</header>
+
+{% include "agenda/gestion/_selector_local.html" %}
+
+<div class="contadores contadores-3">
+  <div class="tarjeta"><p class="texto-chico texto-suave">Insumos en el local</p><p class="numero">{{ inventarios|length }}</p></div>
+  <div class="tarjeta {% if stock_bajo %}tarjeta-alerta{% endif %}"><p class="texto-chico texto-suave">Con stock bajo el mínimo</p><p class="numero">{{ stock_bajo }}</p></div>
+  <div class="tarjeta"><p class="texto-chico texto-suave">Solicitudes en proceso</p><p class="numero">{{ planes_activos }}</p></div>
+</div>
+
+<div class="tarjeta">
+  <form method="get" class="barra-filtros">
+    <input type="hidden" name="local" value="{{ local.id }}">
+    <div class="buscador con-icono">
+      <i data-lucide="search" class="icono"></i>
+      <input name="q" value="{{ q }}" placeholder="Buscar insumo o categoría..." class="entrada">
+    </div>
+  </form>
+  {% if inventarios %}
+  <div class="agenda">
+    <table class="tabla">
+      <thead>
+        <tr><th>ID</th><th>Insumo</th><th>Categoría</th><th>Stock actual</th><th>Stock mínimo</th><th>Última actualización</th><th></th></tr>
+      </thead>
+      <tbody>
+        {% for item in inventarios %}
+        <tr>
+          <td class="texto-chico texto-suave">#{{ item.id }}</td>
+          <td>
+            <p class="negrita">{{ item.producto.nombre }}</p>
+            <p class="texto-chico texto-suave">{{ item.producto.descripcion|default:"Insumo operativo"|truncatechars:45 }}</p>
+          </td>
+          <td><span class="etiqueta">{{ item.producto.categoria|default:"General" }}</span></td>
+          <td><span class="etiqueta-estado {% if item.cantidad <= item.producto.stock_minimo %}estado-cancelada{% else %}estado-completada{% endif %}">{{ item.cantidad }} uds</span></td>
+          <td>{{ item.producto.stock_minimo }}</td>
+          <td class="texto-chico">{{ item.ultima_actualizacion|date:"d/m/Y H:i"|default:"—" }}</td>
+          <td class="acciones-tabla">
+            <a href="{% url 'inventario_editar' item.id %}" class="boton boton-borde boton-chico"><i data-lucide="pencil" class="icono"></i> Editar</a>
+            <a href="{% url 'inventario_eliminar' item.id %}" class="boton boton-cancelar boton-chico"><i data-lucide="trash-2" class="icono"></i> Eliminar</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="vacio tarjeta-vacia">No hay insumos registrados en este local{% if q %} que coincidan con «{{ q }}»{% endif %}.</p>
+  {% endif %}
+</div>
+{% endblock %}

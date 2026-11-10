@@ -1,0 +1,41 @@
+{% extends "agenda/base.html" %}
+{% load static %}
+
+{% block title %}{{ accion }} Trabajador · Centro Estético Antonia{% endblock %}
+
+{% block content %}
+<div class="container my-5" style="max-width: 650px;">
+    <div class="mb-3">
+        <a href="{% url 'personal_list' %}" class="text-decoration-none text-secondary">← Volver al listado</a>
+    </div>
+    <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-body p-4">
+            <h3 class="fw-bold mb-4 text-dark">{{ accion }} Trabajador</h3>
+            
+            <form method="post">
+                {% csrf_token %}
+                
+                {{ form.non_field_errors }}
+
+                {% for field in form %}
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-secondary">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.name == 'password_temporal' %}
+                            <div class="form-text text-muted">Contraseña autogenerada y segura para el primer acceso del usuario.</div>
+                        {% endif %}
+                        {% if field.errors %}
+                            <div class="text-danger small mt-1">{{ field.errors }}</div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                <div class="d-flex justify-content-between align-items-center mt-4 pt-2 border-top">
+                    <a href="{% url 'personal_list' %}" class="btn btn-outline-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-primary px-4">Guardar Registro</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

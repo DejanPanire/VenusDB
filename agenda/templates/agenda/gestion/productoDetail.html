@@ -1,0 +1,98 @@
+{% extends "agenda/base.html" %}
+{% load static %}
+
+{% block title %}Detalle de Producto · Centro Estético Antonia{% endblock %}
+
+{% block content %}
+<div class="container my-4" style="max-width: 1000px;">
+    <h3 class="fw-bold text-uppercase fs-5 mb-4" style="color: #4a2e35; letter-spacing: 0.5px;">Detalles de Producto</h3>
+
+    <div class="main-container p-4">
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <div class="p-3 bg-white border rounded-3 shadow-sm">
+                    <small class="text-muted d-block mb-1" style="font-size: 12px;">Items Entregados</small>
+                    <span class="fw-bold fs-4 text-dark">{{ item.stock }}</span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="p-3 bg-white border rounded-3 shadow-sm">
+                    <small class="text-muted d-block mb-1" style="font-size: 12px;">Stock disponible</small>
+                    <span class="fw-bold fs-4 {% if item.stock <= item.stock_minimo %}text-danger{% else %}text-primary{% endif %}">
+                        {{ item.stock }}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <div class="d-flex align-items-center gap-2 mb-3">
+                <span style="color: #d67ba8;">ℹ</span>
+                <h6 class="fw-bold m-0" style="color: #d67ba8; font-size: 14px;">Informacion basica</h6>
+            </div>
+            
+            <div class="row g-3 text-secondary" style="font-size: 13px;">
+                <div class="col-md-3 fw-semibold text-muted">Nombre producto</div>
+                <div class="col-md-3 text-dark fw-bold">{{ item.nombre }}</div>
+                
+                <div class="col-md-3 fw-semibold text-muted">Marca</div>
+                <div class="col-md-3 text-dark">{{ item.marca|default:"-" }}</div>
+
+                <div class="col-md-3 fw-semibold text-muted">Categoría</div>
+                <div class="col-md-3 text-dark">{{ item.categoria|default:"General" }}</div>
+                
+                <div class="col-md-3 fw-semibold text-muted">Stock Mínimo</div>
+                <div class="col-md-3 text-dark">{{ item.stock_minimo }}</div>
+
+                <div class="col-md-3 fw-semibold text-muted">Descripción</div>
+                <div class="col-md-9 text-dark">{{ item.descripcion|default:"-" }}</div>
+            </div>
+        </div>
+
+        <hr class="text-muted my-4">
+
+        <div class="mb-4">
+            <div class="d-flex align-items-center gap-2 mb-3">
+                <span style="color: #d67ba8; font-weight: bold;">$</span>
+                <h6 class="fw-bold m-0" style="color: #d67ba8; font-size: 14px;">Costo</h6>
+            </div>
+
+            <div class="row g-3 text-secondary" style="font-size: 13px;">
+                <div class="col-md-3 fw-semibold text-muted">Valor de Compra</div>
+                <div class="col-md-3 text-dark fw-bold">${{ item.valor_de_compra }}</div>
+                
+                <div class="col-md-3 fw-semibold text-muted">Tipo</div>
+                <div class="col-md-3 text-dark">{% if item.es_insumo %}Insumo interno{% else %}Producto venta{% endif %}</div>
+            </div>
+        </div>
+
+        <hr class="text-muted my-4">
+
+        <div class="mb-3">
+            <div class="d-flex align-items-center gap-2 mb-3">
+                <span style="color: #d67ba8;">📋</span>
+                <h6 class="fw-bold m-0" style="color: #d67ba8; font-size: 14px;">Inventario y Control de Stock</h6>
+            </div>
+
+            <div class="bg-light p-3 rounded border">
+                <form action="{% url 'descontar_stock' item.pk %}" method="post" class="row g-3 align-items-center">
+                    {% csrf_token %}
+                    <div class="col-auto">
+                        <label for="cantidad" class="col-form-label small fw-semibold text-secondary">Cantidad a descontar:</label>
+                    </div>
+                    <div class="col-auto">
+                        <input type="number" name="cantidad" id="cantidad" class="form-control form-control-sm" value="1" min="1" max="{{ item.stock }}" style="width: 90px;">
+                    </div>
+                    <div class="col-auto">
+                        <button type="submit" class="btn-eliminar-antonia py-1 px-3 border-0" style="font-size: 13px;">Restar Stock</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <a href="{% url 'inventario' %}" class="text-decoration-none text-secondary" style="font-size: 13px;">← Volver al listado general de inventario</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

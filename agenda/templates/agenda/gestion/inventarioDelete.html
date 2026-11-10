@@ -1,0 +1,29 @@
+{% extends "agenda/base.html" %}
+{% load static %}
+
+{% block title %}Eliminar Registro · Centro Estético Antonia{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="main-container text-center p-5">
+                <h3 class="text-danger mb-3 fw-bold">¿Estás seguro de eliminar este registro?</h3>
+                <p class="text-muted mb-4">
+                    Vas a retirar del inventario el producto o insumo 
+                    <strong class="text-dark">"{{ inventario.producto.nombre }}"</strong> 
+                    perteneciente a la sucursal <strong class="text-dark">{{ inventario.sucursal.nombre }}</strong>.
+                </p>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-center gap-3">
+                        <button type="submit" class="btn btn-danger px-4 fw-semibold">Sí, eliminar</button>
+                        <a href="{% url 'inventario_list_sucursal' inventario.sucursal.id %}" class="btn btn-secondary px-4 fw-semibold">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

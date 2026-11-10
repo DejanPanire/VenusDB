@@ -1,0 +1,63 @@
+{% extends "agenda/base.html" %}
+{% load static %}
+
+{% block title %}Perfil de {{ trabajador.nombre }} · Centro Estético Antonia{% endblock %}
+
+{% block content %}
+<div class="container my-5" style="max-width: 700px;">
+    <div class="mb-3">
+        <a href="{% url 'personal_list' %}" class="text-decoration-none text-secondary">← Volver al listado</a>
+    </div>
+    <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="fw-bold m-0 text-dark">Perfil de Trabajador</h3>
+                <a href="{% url 'personal_update' trabajador.pk %}" class="btn btn-outline-primary btn-sm">Editar Datos</a>
+            </div>
+            
+            <hr>
+
+            <div class="row mb-3">
+                <div class="col-sm-4 fw-semibold text-muted">RUT:</div>
+                <div class="col-sm-8 text-dark">{{ trabajador.rut }}</div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-sm-4 fw-semibold text-muted">Nombre Completo:</div>
+                <div class="col-sm-8 text-dark">{{ trabajador.nombre }} {{ trabajador.apellido }}</div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-sm-4 fw-semibold text-muted">Rol en el Sistema:</div>
+                <div class="col-sm-8"><span class="badge bg-success">{{ trabajador.rol }}</span></div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-sm-4 fw-semibold text-muted">Especialidad:</div>
+                <div class="col-sm-8 text-dark">{{ trabajador.especialidad|default:"No especificada" }}</div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-sm-4 fw-semibold text-muted">Sucursal Asignada:</div>
+                <div class="col-sm-8 text-dark">{{ trabajador.sucursal.nombre|default:"No asignada" }}</div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-sm-4 fw-semibold text-muted">Tipo de Contrato:</div>
+                <div class="col-sm-8 text-dark">{{ trabajador.tipo_contrato|default:"No registrado" }}</div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-sm-4 fw-semibold text-muted">Modalidad de Pago:</div>
+                <div class="col-sm-8 text-dark">{{ trabajador.modalidad_pago|default:"No registrado" }}</div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-sm-4 fw-semibold text-muted">Porcentaje Comisión:</div>
+                <div class="col-sm-8 text-dark">{{ trabajador.porcentaje_comision }}%</div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-sm-4 fw-semibold text-muted">Teléfono:</div>
+                <div class="col-sm-8 text-dark">{{ trabajador.telefono|default:"No registrado" }}</div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-sm-4 fw-semibold text-muted">Correo Electrónico:</div>
+                <div class="col-sm-8 text-dark">{{ trabajador.correo|default:"No registrado" }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
